@@ -34,6 +34,7 @@ st.dataframe(df.head())
 st.header("Genre Distribution")
 
 # 合并电影类型列并去掉空格
+# 合并所有 genre 列，去掉空格并统计分布
 genres = pd.concat([
     df['genre_1'].str.strip(), 
     df['genre_2'].str.strip(), 
@@ -42,32 +43,27 @@ genres = pd.concat([
     df['genre_5'].str.strip()
 ]).dropna()
 
-#1. 计算类型分布
+# 计算所有类型分布
 genre_counts = genres.value_counts()
 
-# 获取前15个类型及其数量
+# 在 Streamlit 中显示所有类型及其数量
+st.write("All Genres and Their Counts:")
+st.write(genre_counts)
+
+# 获取前 15 个类型及其数量
 top_15_genres = genre_counts.head(15)
 
-# 将其余类型合并为"Other"
+# 将其余类型合并为 "Other"
 other_count = genre_counts[15:].sum()
 
-# 创建一个新的序列，确保 "Other" 在第十六位
+# 创建一个新的序列，将 "Other" 直接添加到前 15 个类型中
 top_15_genres_with_other = pd.concat(
     [top_15_genres, pd.Series({"Other": other_count})]
-).iloc[:16]  # 限制最多 16 项
+)
 
-# 显示前15个类型和它们的数量
-st.write("Top 15 Genres and Their Counts (with Other):")
-st.write(top_15_genres_with_other)
-
-# 为图表重新排列顺序，确保前15个按大小排序，"Other" 在最后
-top_15_genres_sorted = pd.concat([
-    top_15_genres.sort_values(ascending=False),  # 前15项按降序排序
-    pd.Series({"Other": other_count})           # "Other" 放在最后
-])
-
-# 显示柱状图
-st.bar_chart(top_15_genres_sorted)
+# 显示柱状图，按照默认顺序显示
+st.header("Top 15 Genres and 'Other'")
+st.bar_chart(top_15_genres_with_other)
 
 # 功能 2: 不同国家电影类型排行
 # 处理 country 列，分隔并展开
