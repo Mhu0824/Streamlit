@@ -51,18 +51,20 @@ top_15_genres = genre_counts.head(15)
 # 将其余类型合并为"Other"
 other_count = genre_counts[15:].sum()
 
-# 创建一个新的包含"Other"的序列
-top_15_genres_with_other = pd.concat([top_15_genres, pd.Series({"Other": other_count})])
-
-# 确保从大到小排序且 "Other" 在最后
-top_15_genres_with_other = top_15_genres_with_other.sort_values(ascending=False)
+# 创建一个新的序列，确保 "Other" 在第十六位
 top_15_genres_with_other = pd.concat(
-    [top_15_genres_with_other.drop("Other"), pd.Series({"Other": other_count})]
-)
+    [top_15_genres, pd.Series({"Other": other_count})]
+).iloc[:16]  # 限制最多 16 项
 
 # 显示前15个类型和它们的数量
-st.write("Top 15 Genres and Their Counts:")
-st.write(top_15_genres)
+st.write("Top 15 Genres and Their Counts (with Other):")
+st.write(top_15_genres_with_other)
+
+# 为图表重新排列顺序，确保前15个按大小排序，"Other" 在最后
+top_15_genres_sorted = pd.concat([
+    top_15_genres.sort_values(ascending=False),  # 前15项按降序排序
+    pd.Series({"Other": other_count})           # "Other" 放在最后
+])
 
 # 显示柱状图
-st.bar_chart(top_15_genres)
+st.bar_chart(top_15_genres_sorted)
