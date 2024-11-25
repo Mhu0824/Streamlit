@@ -93,7 +93,7 @@ if selected_country:
 
     # 只显示种类和数量
     st.write(f"Top 10 Genres for {selected_country}:")
-    top_genres_display = top_genres[['Genre', 'Count']]  # 仅显示 `genre_1` 和 `count`
+    top_genres_display = top_genres[['genre_1', 'count']]  # 仅显示 `genre_1` 和 `count`
     st.write(top_genres_display)
 
     # 绘制条形图
