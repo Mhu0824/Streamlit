@@ -32,7 +32,7 @@ st.bar_chart(genre_counts)
 st.header("Top Genres by Country")
 selected_country = st.selectbox("Select a Country", df['country'].unique())
 country_data = df[df['country'] == selected_country]
-top_genres = pd.concat([country_data['genre_1'], country_data['genre_2'], country_data['genre_3']]).value_counts().head(10)
+top_genres = pd.concat([country_data['genre_1'], country_data['genre_2'], country_data['genre_3'], country_data['genre_4'], country_data['genre_5']]).value_counts().head(10)
 
 fig, ax = plt.subplots(figsize=(8, 6))
 sns.barplot(x=top_genres.values, y=top_genres.index, ax=ax)
