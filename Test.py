@@ -91,14 +91,12 @@ if selected_country:
     # 重命名列为“Count”和“Genre”
     top_genres_display = top_genres[['genre_1', 'count']].rename(columns={'genre_1': 'Genre', 'count': 'Count'})
 
-    # 只显示种类和数量
+    # 显示Top 10类型及其数量
     st.write(f"Top 10 Genres for {selected_country}:")
-    top_genres_display = top_genres[['genre_1', 'count']]  # 仅显示 `genre_1` 和 `count`
     st.write(top_genres_display)
 
     # 绘制条形图
     fig, ax = plt.subplots(figsize=(8, 6))
-    sns.barplot(x='Count', y='Genre', data=top_genres, ax=ax)
+    sns.barplot(x='Count', y='Genre', data=top_genres_display, ax=ax)
     ax.set_title(f"Top Genres in {selected_country}")
     st.pyplot(fig)
-
