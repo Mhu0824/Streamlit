@@ -64,31 +64,29 @@ top_15_genres_with_other = pd.concat(
 st.header("Top 15 Genres and 'Other'")
 st.bar_chart(top_15_genres_with_other)
 
-# 处理国家和类型映射
-# 将 `country` 列拆分为独立的国家
-countries = df['country'].str.split(',').explode().str.strip()
+#2.不同国家电影类型
+# 拆分 `country` 列，确保每个国家单独统计
+df['country'] = df['country'].str.split(", ")
+df_exploded = df.explode('country')  # 将每个国家展开成独立的行
 
-# 将每部电影的国家与所有类型关联
-country_genres = pd.concat([
-    countries.rename("country").reset_index(drop=True),
-    pd.concat([
-        df['genre_1'].str.strip(), 
-        df['genre_2'].str.strip(), 
-        df['genre_3'].str.strip(),
-        df['genre_4'].str.strip(),
-        df['genre_5'].str.strip()
-    ], axis=1).stack().reset_index(drop=True).rename("genre")
-], axis=1).dropna()
+# 确保只统计 `genre_1` 数据，去掉空值
+df_exploded = df_exploded[['country', 'genre_1']].dropna()
+df_exploded['genre_1'] = df_exploded['genre_1'].str.strip()  # 去掉空格
 
-# 按国家和类型分组，统计每个国家的类型分布
-country_genre_counts = country_genres.groupby(['country', 'genre']).size().reset_index(name='count')
+# 按国家和类型分组统计
+country_genre_counts = df_exploded.groupby(['country', 'genre_1']).size().reset_index(name='count')
 
-# 添加 Streamlit 界面选择国家并查看其类型分布
-selected_country = st.selectbox("Select a country to view its top genres:", country_genre_counts['country'].unique())
+# 添加 Streamlit 界面让用户选择国家
+st.title("Top Genres by Country")
+selected_country = st.selectbox("Select a country to view its top genres:", sorted(country_genre_counts['country'].unique()))
 
-# 获取选定国家的前 10 个类型及其数量
-top_genres_for_country = country_genre_counts[country_genre_counts['country'] == selected_country].nlargest(10, 'count')
+# 获取选定国家的前 10 个类型
+if selected_country:
+    top_genres_for_country = country_genre_counts[country_genre_counts['country'] == selected_country].nlargest(10, 'count')
 
-# 显示选定国家的前 10 个类型
-st.header(f"Top 10 Genres for {selected_country}")
-st.bar_chart(data=top_genres_for_country.set_index('genre')['count'])
+    # 显示结果
+    st.write(f"Top 10 Genres in {selected_country}:")
+    st.write(top_genres_for_country)
+
+    # 绘制柱状图
+    st.bar_chart(data=top_genres_for_country.set_index('genre_1')['count'])
