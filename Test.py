@@ -65,24 +65,36 @@ st.header("Top 15 Genres and 'Other'")
 st.bar_chart(top_15_genres_with_other)
 
 #2.不同国家电影类型
-# 将每部电影的 'country' 列按逗号拆分为多个国家
+# 拆分 `country` 列
 df['country'] = df['country'].str.split(", ")
+df_exploded = df.explode('country')  # 展开成多行，每行一个国家
 
-st.header("Top Genres by Country")
-selected_country = st.selectbox("Select a Country", df['country'].explode().unique())
+# 只使用 `genre_1` 的内容
+df_exploded = df_exploded[['country', 'genre_1']].dropna()
+df_exploded['genre_1'] = df_exploded['genre_1'].str.strip()  # 去掉空格
 
-# 筛选出包含所选国家的数据
-country_data = df[df['country'].apply(lambda x: selected_country in x)]
+# 按国家和 `genre_1` 统计
+country_genre_counts = df_exploded.groupby(['country', 'genre_1']).size().reset_index(name='count')
 
-# 合并所有 genre 列并统计每个 genre 的出现次数
-top_genres = pd.concat([country_data['genre_1'], country_data['genre_2'], country_data['genre_3'], country_data['genre_4'], country_data['genre_5']]).value_counts().head(10)
+# Streamlit 界面
+st.title("Top Genres by Country (Using genre_1)")
 
-# 显示前 10 个类型及其数量
-st.write(f"Top 10 Genres for {selected_country}:")
-st.write(top_genres)  # 直接显示 genre 和 count
+# 用户选择国家
+countries = country_genre_counts['country'].unique()
+selected_country = st.selectbox("Select a Country:", sorted(countries))
 
-# 可视化：绘制条形图
-fig, ax = plt.subplots(figsize=(8, 6))
-sns.barplot(x=top_genres.values, y=top_genres.index, ax=ax)
-ax.set_title(f"Top Genres in {selected_country}")
-st.pyplot(fig)
+# 获取所选国家的 Top 10 类型
+if selected_country:
+    top_genres = country_genre_counts[country_genre_counts['country'] == selected_country]
+    top_genres = top_genres.nlargest(10, 'count')
+
+    # 只显示种类和数量
+    st.write(f"Top 10 Genres for {selected_country}:")
+    top_genres_display = top_genres[['genre_1', 'count']]  # 仅显示 `genre_1` 和 `count`
+    st.write(top_genres_display)
+
+    # 绘制条形图
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.barplot(x='Count', y='Genre', data=top_genres, ax=ax)
+    ax.set_title(f"Top Genres in {selected_country}")
+    st.pyplot(fig)
