@@ -46,11 +46,11 @@ genres = pd.concat([
 genre_counts = genres.value_counts()
 
 # 获取前15个类型及其数量
-top_25_genres = genre_counts.head(15)
+top_15_genres = genre_counts.head(15)
 
 # 将其余类型合并为"Other"
 other_count = genre_counts[15:].sum()
-top_25_genres["Other"] = other_count
+top_15_genres["Other"] = other_count
 
 # 显示前15个类型和它们的数量
 st.write("Top 15 Genres and Their Counts:")
