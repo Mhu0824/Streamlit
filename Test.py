@@ -77,7 +77,7 @@ df_exploded['genre_1'] = df_exploded['genre_1'].str.strip()  # 去掉空格
 country_genre_counts = df_exploded.groupby(['country', 'genre_1']).size().reset_index(name='count')
 
 # Streamlit 界面
-st.title("Top Genres by Country (Using genre_1)")
+st.title("Top Genres by Country")
 
 # 用户选择国家
 countries = country_genre_counts['country'].unique()
