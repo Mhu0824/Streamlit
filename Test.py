@@ -30,6 +30,8 @@ st.header("Overview")
 st.write("Dataset Snapshot:")
 st.dataframe(df.head())
 
+st.header("Genre Distribution")
+
 # 功能 1: 电影类型分布
 st.header("Genre Distribution")
 
@@ -43,6 +45,10 @@ genre_counts = genres.value_counts()
 top_genres = genre_counts.head(25)
 other_count = genre_counts[25:].sum()
 top_genres["Other"] = other_count
+
+# 显示前25个类型和它们的数量
+st.write("Top 25 Genres and Their Counts:")
+st.write(top_25_genres)
 
 # 显示柱状图
 st.bar_chart(top_genres)
