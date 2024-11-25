@@ -70,37 +70,34 @@ top_15_genres_sorted = pd.concat([
 st.bar_chart(top_15_genres_sorted)
 
 # 功能 2: 不同国家电影类型排行
-st.write("Data Columns:", df.columns.tolist())
-
-# 处理 country 列：拆分多个国家为独立的记录
+# 处理 country 列，分隔并展开
 df['country'] = df['country'].str.split(", ")
-df_exploded = df.explode('country')  # 展开成多行
+df_exploded = df.explode('country')  # 将多国电影展开成多行
+
+# 基于展开的国家和 genres 数据统计每个国家的类型分布
+df_exploded['genre'] = genres.reset_index(drop=True)  # 添加 genres 数据到 df_exploded
+df_exploded = df_exploded.dropna(subset=['genre', 'country'])  # 确保无空值
 
 # Streamlit App
-st.title("Top Genres by Country")
+st.title("Top 10 Genres by Country")
 
 # 用户选择国家
 countries = df_exploded['country'].dropna().unique()
 selected_country = st.selectbox("Select a Country:", sorted(countries))
 
-# 获取所选国家的 Top 10 Genres
+# 获取所选国家的 Top 10 类型
 if selected_country:
     country_data = df_exploded[df_exploded['country'] == selected_country]
+    top_10_genres = country_data['genre'].value_counts().head(10)
 
-    # 确保存在 genre 列
-    if 'genre' not in country_data.columns:
-        st.error("Genre column is missing in the processed data.")
-    else:
-        top_genres = country_data['genre'].value_counts().head(10)
+    # 显示前 10 类型及其数量
+    st.write(f"Top 10 Genres in {selected_country}:")
+    st.write(top_10_genres)
 
-        # 显示前 10 类型及其数量
-        st.write(f"Top 10 Genres in {selected_country}:")
-        st.write(top_genres)
-
-        # 绘制柱状图
-        fig, ax = plt.subplots(figsize=(8, 6))
-        sns.barplot(x=top_genres.values, y=top_genres.index, ax=ax, palette="viridis")
-        ax.set_title(f"Top 10 Genres in {selected_country}")
-        ax.set_xlabel("Count")
-        ax.set_ylabel("Genre")
-        st.pyplot(fig)
+    # 绘制柱状图
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.barplot(x=top_10_genres.values, y=top_10_genres.index, ax=ax, palette="viridis")
+    ax.set_title(f"Top 10 Genres in {selected_country}")
+    ax.set_xlabel("Count")
+    ax.set_ylabel("Genre")
+    st.pyplot(fig)
