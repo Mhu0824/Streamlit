@@ -33,16 +33,16 @@ st.dataframe(df.head())
 # 功能 1: 电影类型分布
 st.header("Genre Distribution")
 
-# 合并多个 genre 列，并计算出现次数
+# 合并电影类型列
 genres = pd.concat([df['genre_1'], df['genre_2'], df['genre_3']]).dropna()
 
-# 按出现次数排序，取前15个
-genre_counts = genres.value_counts(ascending=False).head(15)
+# 计算类型分布
+genre_counts = genres.value_counts()
 
-# 将结果转换为 DataFrame，确保索引顺序一致
-genre_counts_df = genre_counts.reset_index()
-genre_counts_df.columns = ['Genre', 'Count']
-genre_counts_df = genre_counts_df.sort_values(by='Count', ascending=False)
+# 将前15个类型保留，其余合并为"Other"
+top_genres = genre_counts.head(15)
+other_count = genre_counts[15:].sum()
+top_genres["Other"] = other_count
 
-# 使用 Streamlit 的 bar_chart 按顺序绘图
-st.bar_chart(genre_counts_df.set_index('Genre')['Count'])
+# 显示柱状图
+st.bar_chart(top_genres)
