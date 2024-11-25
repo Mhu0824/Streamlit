@@ -40,8 +40,8 @@ genres = pd.concat([df['genre_1'], df['genre_2'], df['genre_3']]).dropna()
 genre_counts = genres.value_counts()
 
 # 将前15个类型保留，其余合并为"Other"
-top_genres = genre_counts.head(15)
-other_count = genre_counts[15:].sum()
+top_genres = genre_counts.head(20)
+other_count = genre_counts[20:].sum()
 top_genres["Other"] = other_count
 
 # 显示柱状图
