@@ -89,7 +89,7 @@ if selected_country:
     top_genres = top_genres.nlargest(10, 'count')
 
     # 重命名列为“Count”和“Genre”
-    top_genres_display = top_genres[['genre_1', 'count']].rename(columns={'genre_1': 'Genre', 'count': 'Count'})
+    top_genres_display = top_genres[['genre_1', 'count']].rename(columns={'genre_1': 'Genre', 'count': 'Count'}).reset_index(drop=True)
 
     # 显示Top 10类型及其数量
     st.write(f"Top 10 Genres for {selected_country}:")
