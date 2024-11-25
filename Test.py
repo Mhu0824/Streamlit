@@ -77,7 +77,7 @@ df_exploded['genre_1'] = df_exploded['genre_1'].str.strip()  # 去掉空格
 country_genre_counts = df_exploded.groupby(['country', 'genre_1']).size().reset_index(name='count')
 
 # Streamlit 界面
-st.title("Top Genres by Country")
+st.title("Top Genres by Country (Using genre_1)")
 
 # 用户选择国家
 countries = country_genre_counts['country'].unique()
@@ -88,15 +88,14 @@ if selected_country:
     top_genres = country_genre_counts[country_genre_counts['country'] == selected_country]
     top_genres = top_genres.nlargest(10, 'count')
 
-    # 重命名列为“Count”和“Genre”
-    top_genres_display = top_genres[['genre_1', 'count']].rename(columns={'genre_1': 'Genre', 'count': 'Count'})
-    
     # 只显示种类和数量
     st.write(f"Top 10 Genres for {selected_country}:")
+    top_genres_display = top_genres[['genre_1', 'count']]  # 仅显示 `genre_1` 和 `count`
     st.write(top_genres_display)
 
     # 绘制条形图
     fig, ax = plt.subplots(figsize=(8, 6))
-    sns.barplot(x='Count', y='Genre', data=top_genres, ax=ax)
+    sns.barplot(x='count', y='genre_1', data=top_genres, ax=ax)
     ax.set_title(f"Top Genres in {selected_country}")
     st.pyplot(fig)
+
