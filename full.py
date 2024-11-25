@@ -34,6 +34,9 @@ selected_country = st.selectbox("Select a Country", df['country'].unique())
 country_data = df[df['country'] == selected_country]
 top_genres = pd.concat([country_data['genre_1'], country_data['genre_2'], country_data['genre_3'], country_data['genre_4'], country_data['genre_5']]).value_counts().head(10)
 
+st.write(f"Top 10 Genres for {selected_country}:")
+st.write(top_genres)
+
 fig, ax = plt.subplots(figsize=(8, 6))
 sns.barplot(x=top_genres.values, y=top_genres.index, ax=ax)
 ax.set_title(f"Top Genres in {selected_country}")
