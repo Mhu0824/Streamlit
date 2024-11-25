@@ -52,10 +52,13 @@ top_15_genres = genre_counts.head(15)
 other_count = genre_counts[15:].sum()
 top_15_genres["Other"] = other_count
 
+# 确保 "Other" 出现在最后
+top_15_genres = top_15_genres.sort_values(ascending=False)
+top_15_genres = top_15_genres.append(pd.Series({"Other": other_count}))
+
 # 显示前15个类型和它们的数量
 st.write("Top 15 Genres and Their Counts:")
 st.write(top_15_genres)
 
 # 显示柱状图
 st.bar_chart(top_15_genres)
-
