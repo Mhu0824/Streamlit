@@ -33,9 +33,14 @@ st.dataframe(df.head())
 st.header("Genre Distribution")
 
 # 功能 1: 电影类型分布
-
-# 合并电影类型列
-genres = pd.concat([df['genre_1'], df['genre_2'], df['genre_3']]).dropna()
+# 合并电影类型列并去掉空格
+genres = pd.concat([
+    df['genre_1'].str.strip(), 
+    df['genre_2'].str.strip(), 
+    df['genre_3'].str.strip(),
+    df['genre_4'].str.strip(),
+    df['genre_5'].str.strip()
+]).dropna()
 
 # 计算类型分布
 genre_counts = genres.value_counts()
@@ -53,11 +58,4 @@ st.write(top_25_genres)
 
 # 显示柱状图
 st.bar_chart(top_25_genres)
-top_genres["Other"] = other_count
 
-# 显示前25个类型和它们的数量
-st.write("Top 25 Genres and Their Counts:")
-st.write(top_25_genres)
-
-# 显示柱状图
-st.bar_chart(top_genres)
