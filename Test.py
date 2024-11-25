@@ -80,13 +80,17 @@ country_genre_counts = df_exploded.groupby(['country', 'genre_1']).size().reset_
 st.title("Top Genres by Country")
 selected_country = st.selectbox("Select a country to view its top genres:", sorted(country_genre_counts['country'].unique()))
 
-# 获取选定国家的前 10 个类型
+# 获取所选国家的 Top 10 类型
 if selected_country:
-    top_genres_for_country = country_genre_counts[country_genre_counts['country'] == selected_country].nlargest(10, 'count')
+    top_genres = country_genre_counts[country_genre_counts['country'] == selected_country]
+    top_genres = top_genres.nlargest(10, 'count')
 
-    # 显示结果
-    st.write(f"Top 10 Genres in {selected_country}:")
-    st.write(top_genres_for_country)
+    # 显示前 10 类型及其数量
+    st.write(f"Top 10 Genres for {selected_country}:")
+    st.write(top_genres)
 
-    # 绘制柱状图
-    st.bar_chart(data=top_genres_for_country.set_index('genre_1')['count'])
+    # 绘制条形图
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.barplot(x='count', y='genre_1', data=top_genres, ax=ax)
+    ax.set_title(f"Top Genres in {selected_country}")
+    st.pyplot(fig)
