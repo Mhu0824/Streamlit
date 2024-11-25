@@ -50,11 +50,15 @@ top_15_genres = genre_counts.head(15)
 
 # 将其余类型合并为"Other"
 other_count = genre_counts[15:].sum()
-top_15_genres["Other"] = other_count
 
-# 确保 "Other" 出现在最后
-top_15_genres = top_15_genres.sort_values(ascending=False)
-top_15_genres = top_15_genres.append(pd.Series({"Other": other_count}))
+# 创建一个新的包含"Other"的序列
+top_15_genres_with_other = pd.concat([top_15_genres, pd.Series({"Other": other_count})])
+
+# 确保从大到小排序且 "Other" 在最后
+top_15_genres_with_other = top_15_genres_with_other.sort_values(ascending=False)
+top_15_genres_with_other = pd.concat(
+    [top_15_genres_with_other.drop("Other"), pd.Series({"Other": other_count})]
+)
 
 # 显示前15个类型和它们的数量
 st.write("Top 15 Genres and Their Counts:")
