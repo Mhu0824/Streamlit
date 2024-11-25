@@ -32,38 +32,17 @@ st.dataframe(df.head())
 
 # 功能 1: 电影类型分布
 st.header("Genre Distribution")
+
+# 合并多个 genre 列，并计算出现次数
 genres = pd.concat([df['genre_1'], df['genre_2'], df['genre_3']]).dropna()
-genre_counts = genres.value_counts().head(15)
 
-st.bar_chart(genre_counts)
+# 按出现次数排序，取前15个
+genre_counts = genres.value_counts(ascending=False).head(15)
 
-# 功能 2: 按国家和类型
-st.header("Top Genres by Country")
-selected_country = st.selectbox("Select a Country", df['country'].unique())
-country_data = df[df['country'] == selected_country]
-top_genres = pd.concat([country_data['genre_1'], country_data['genre_2'], country_data['genre_3']]).value_counts().head(10)
+# 将结果转换为 DataFrame，确保索引顺序一致
+genre_counts_df = genre_counts.reset_index()
+genre_counts_df.columns = ['Genre', 'Count']
+genre_counts_df = genre_counts_df.sort_values(by='Count', ascending=False)
 
-fig, ax = plt.subplots(figsize=(8, 6))
-sns.barplot(x=top_genres.values, y=top_genres.index, ax=ax)
-ax.set_title(f"Top Genres in {selected_country}")
-st.pyplot(fig)
-
-# 功能 3: 按年份评分趋势
-st.header("Ratings Over Time")
-rating_trend = df.groupby('year')['imdbRating'].mean().dropna()
-
-st.line_chart(rating_trend)
-
-# 功能 4: 国家和类型热度图
-st.header("Genre Heatmap by Country")
-df_exploded = df.copy()
-df_exploded['country'] = df_exploded['country'].str.split(", ")
-df_exploded = df_exploded.explode('country')
-df_exploded = df_exploded.melt(id_vars=['country'], value_vars=['genre_1', 'genre_2', 'genre_3'], var_name='genre_type', value_name='genre').dropna()
-
-heatmap_data = df_exploded.groupby(['country', 'genre']).size().unstack(fill_value=0).iloc[:15, :15]
-
-fig, ax = plt.subplots(figsize=(12, 8))
-sns.heatmap(heatmap_data, cmap="YlGnBu", ax=ax)
-ax.set_title("Top Genres by Country")
-st.pyplot(fig)
+# 使用 Streamlit 的 bar_chart 按顺序绘图
+st.bar_chart(genre_counts_df.set_index('Genre')['Count'])
