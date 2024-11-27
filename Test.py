@@ -25,78 +25,140 @@ df = load_data()
 # 标题
 st.title("🎬 Movie Data Dashboard")
 
-# 数据概览
-st.header("Overview")
-st.write("Dataset Snapshot:")
-st.dataframe(df.head())
-
-# 功能 1: 电影类型分布
-st.header("Genre Distribution")
-
-# 处理电影类型数据
-genres = pd.concat([
-    df['genre_1'].str.strip(), 
-    df['genre_2'].str.strip(), 
-    df['genre_3'].str.strip(),
-    df['genre_4'].str.strip(),
-    df['genre_5'].str.strip()
-]).dropna()
-
-# 计算所有类型的分布
-genre_counts = genres.value_counts()
-
-# 在 Streamlit 中显示所有类型及其数量
-st.header("All Genres and Their Counts")
-st.write(genre_counts)
-
-# 获取前 15 个类型及其数量
-top_15_genres = genre_counts.head(15)
-
-# 将其余类型合并为 "Other"
-other_count = genre_counts[15:].sum()
-
-# 创建一个新的序列，将 "Other" 直接添加到前 15 个类型中
-top_15_genres_with_other = pd.concat(
-    [top_15_genres, pd.Series({"Other": other_count})]
+# 功能选择
+option = st.sidebar.radio(
+    "Choose a feature:",
+    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie")
 )
 
-# 显示柱状图
-st.header("Top 15 Genres and 'Other'")
-st.bar_chart(top_15_genres_with_other)
+# 功能 1: 数据概览
+if option == "Overview":
+    st.header("Overview")
+    st.write("Dataset Snapshot:")
+    st.dataframe(df.head())
 
-#2.不同国家电影类型
-# 拆分 `country` 列
-df['country'] = df['country'].str.split(", ")
-df_exploded = df.explode('country')  # 展开成多行，每行一个国家
+# 功能 2: 电影类型分布
+elif option == "Genre Distribution":
+    st.header("Genre Distribution")
 
-# 只使用 `genre_1` 的内容
-df_exploded = df_exploded[['country', 'genre_1']].dropna()
-df_exploded['genre_1'] = df_exploded['genre_1'].str.strip()  # 去掉空格
+    # 处理电影类型数据
+    genres = pd.concat([
+        df['genre_1'].str.strip(), 
+        df['genre_2'].str.strip(), 
+        df['genre_3'].str.strip(),
+        df['genre_4'].str.strip(),
+        df['genre_5'].str.strip()
+    ]).dropna()
 
-# 按国家和 `genre_1` 统计
-country_genre_counts = df_exploded.groupby(['country', 'genre_1']).size().reset_index(name='count')
+    # 计算所有类型的分布
+    genre_counts = genres.value_counts()
 
-# Streamlit 界面
-st.title("Top Genres by Country (Using genre_1)")
+    # 在 Streamlit 中显示所有类型及其数量
+    st.write("All Genres and Their Counts:")
+    st.write(genre_counts)
 
-# 用户选择国家
-countries = country_genre_counts['country'].unique()
-selected_country = st.selectbox("Select a Country:", sorted(countries))
+    # 获取前 15 个类型及其数量
+    top_15_genres = genre_counts.head(15)
 
-# 获取所选国家的 Top 10 类型
-if selected_country:
-    top_genres = country_genre_counts[country_genre_counts['country'] == selected_country]
-    top_genres = top_genres.nlargest(10, 'count')
+    # 将其余类型合并为 "Other"
+    other_count = genre_counts[15:].sum()
 
-    # 重命名列为“Count”和“Genre”
-    top_genres_display = top_genres[['genre_1', 'count']].rename(columns={'genre_1': 'Genre', 'count': 'Count'}).reset_index(drop=True)
+    # 创建一个新的序列，将 "Other" 直接添加到前 15 个类型中
+    top_15_genres_with_other = pd.concat(
+        [top_15_genres, pd.Series({"Other": other_count})]
+    )
 
-    # 显示Top 10类型及其数量
-    st.write(f"Top 10 Genres for {selected_country}:")
-    st.write(top_genres_display)
-
-    # 绘制条形图
+    # 显示柱状图
+    st.header("Top 15 Genres and 'Other'")
     fig, ax = plt.subplots(figsize=(8, 6))
-    sns.barplot(x='Count', y='Genre', data=top_genres_display, ax=ax)
-    ax.set_title(f"Top Genres in {selected_country}")
+    sns.barplot(x=top_15_genres_with_other.values, y=top_15_genres_with_other.index, ax=ax)
+    ax.set_title("Top 15 Genres and 'Other'")
     st.pyplot(fig)
+
+# 功能 3: 不同国家电影类型
+elif option == "Top Genres by Country":
+    # 拆分 `country` 列
+    df['country'] = df['country'].str.split(", ")
+    df_exploded = df.explode('country')  # 展开成多行，每行一个国家
+
+    # 只使用 `genre_1` 的内容
+    df_exploded = df_exploded[['country', 'genre_1']].dropna()
+    df_exploded['genre_1'] = df_exploded['genre_1'].str.strip()  # 去掉空格
+
+    # 按国家和 `genre_1` 统计
+    country_genre_counts = df_exploded.groupby(['country', 'genre_1']).size().reset_index(name='count')
+
+    # 用户选择国家
+    countries = country_genre_counts['country'].unique()
+    selected_country = st.selectbox("Select a Country:", sorted(countries))
+
+    # 获取所选国家的 Top 10 类型
+    if selected_country:
+        top_genres = country_genre_counts[country_genre_counts['country'] == selected_country]
+        top_genres = top_genres.nlargest(10, 'count')
+
+        # 重命名列为“Count”和“Genre”
+        top_genres_display = top_genres[['genre_1', 'count']].rename(columns={'genre_1': 'Genre', 'count': 'Count'}).reset_index(drop=True)
+
+        # 显示Top 10类型及其数量
+        st.write(f"Top 10 Genres for {selected_country}:")
+        st.write(top_genres_display)
+
+        # 绘制条形图
+        fig, ax = plt.subplots(figsize=(8, 6))
+        sns.barplot(x='Count', y='Genre', data=top_genres_display, ax=ax)
+        ax.set_title(f"Top Genres in {selected_country}")
+        st.pyplot(fig)
+
+# 功能 4: 按导演名字搜索
+elif option == "Search by Director":
+    st.header("Search by Director")
+
+    # 用户输入导演名字
+    director_name = st.text_input("Enter Director's Name:")
+    if director_name:
+        # 搜索该导演的电影
+        director_movies = df[df['director'].str.contains(director_name, case=False, na=False)]
+
+        if not director_movies.empty:
+            st.write(f"Movies directed by {director_name}:")
+            st.write(director_movies[['title', 'genre_1', 'imdbRating']].rename(
+                columns={'title': 'Title', 'genre_1': 'Genre', 'imdbRating': 'IMDB Rating'}
+            ))
+
+            # 计算平均评分
+            avg_rating = director_movies['imdbRating'].mean()
+            st.write(f"Average IMDB Rating for {director_name}'s movies: {avg_rating:.2f}")
+        else:
+            st.write(f"No movies found for director: {director_name}")
+
+# 功能 5: 按电影名字搜索
+elif option == "Search by Movie":
+    st.header("Search by Movie")
+
+    # 用户输入电影名字
+    movie_name = st.text_input("Enter Movie Title:")
+    if movie_name:
+        # 搜索包含该电影名字的电影
+        movie = df[df['title'].str.contains(movie_name, case=False, na=False)]
+
+        if not movie.empty:
+            st.write(f"Details for movies matching '{movie_name}':")
+            st.write(movie[['title', 'director', 'genre_1', 'imdbRating', 'country']].rename(
+                columns={'title': 'Title', 'director': 'Director', 'genre_1': 'Genre', 'imdbRating': 'IMDB Rating', 'country': 'Country'}
+            ))
+
+            # 找出导演的其他作品
+            movie_director = movie['director'].iloc[0]
+            other_movies = df[df['director'] == movie_director].drop_duplicates(subset=['title'])
+
+            st.write(f"Other movies by {movie_director}:")
+            st.write(other_movies[['title', 'imdbRating']].rename(
+                columns={'title': 'Title', 'imdbRating': 'IMDB Rating'}
+            ))
+
+            # 计算这些作品的平均评分
+            avg_rating = other_movies['imdbRating'].mean()
+            st.write(f"Average IMDB Rating for {movie_director}'s movies: {avg_rating:.2f}")
+        else:
+            st.write(f"No movies found matching: {movie_name}")
