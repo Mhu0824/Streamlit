@@ -146,31 +146,30 @@ elif option == "Search by Director":
 elif option == "Search by Movie":
     st.header("Search by Movie")
 
-    # 用户输入电影名字并动态匹配
-    movie_name = st.text_input("Search for a Movie:")
+    # 用户输入电影名字，自动联想匹配结果（显示年份）
+    movie_name = st.text_input("Enter Movie Title:")
     if movie_name:
-        # 动态显示匹配的电影及年份
+        # 匹配电影名称和年份并组合
         matching_movies = sorted(
             {f"{title.strip()} ({year})" for title, year in zip(df['title'], df['year']) 
              if pd.notna(title) and movie_name.lower() in title.lower()}
         )
-        
         selected_movie_with_year = st.selectbox("Select a Movie:", matching_movies)
         
         if selected_movie_with_year:
             # 从选项中解析出电影名称和年份
             selected_movie, selected_year = selected_movie_with_year.rsplit(" (", 1)
-            selected_year = int(selected_year[:-1])  # 去掉括号
+            selected_year = int(selected_year.rstrip(")"))
             
-            # 筛选出唯一的电影
+            # 精确筛选用户选择的电影
             movie_details = df[(df['title'] == selected_movie) & (df['year'] == selected_year)]
             
             if not movie_details.empty:
                 # 获取导演名字
                 director_name = movie_details['director'].iloc[0]
                 
-                # 显示详细信息
-                st.write(f"Details for '{selected_movie}' created by {director_name}:")
+                # 显示电影详细信息
+                st.write(f"Details for '{selected_movie}' ({selected_year}) created by {director_name}:")
                 st.dataframe(
                     movie_details[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
                         columns={
@@ -196,3 +195,5 @@ elif option == "Search by Movie":
                 # 计算导演其他电影平均评分
                 avg_rating = other_movies['imdbRating'].mean()
                 st.write(f"Average IMDB Rating for {director_name}'s other movies: {avg_rating:.2f}")
+            else:
+                st.write("No details available for the selected movie.")
