@@ -114,51 +114,57 @@ elif option == "Top Genres by Country":
 elif option == "Search by Director":
     st.header("Search by Director")
 
-    # 用户输入导演名字
     director_name = st.text_input("Enter Director's Name:")
     if director_name:
-        # 搜索该导演的电影
-        director_movies = df[df['director'].str.contains(director_name, case=False, na=False)]
+        matching_directors = df['director'].dropna().unique()
+        matching_directors = [name for name in matching_directors if director_name.lower() in name.lower()]
+        if matching_directors:
+            selected_director = st.selectbox("Select a Director:", matching_directors)
+            if selected_director:
+                director_movies = df[df['director'] == selected_director]
+                st.write(f"Movies directed by {selected_director}:")
+                st.dataframe(director_movies[['title', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
+                    columns={
+                        'title': 'Title', 'year': 'Year', 'imdbRating': 'IMDB Rating',
+                        'imdbVotes': 'IMDB Votes', 'rating': 'Rating', 'awards': 'Awards'
+                    }
+                ))
 
-        if not director_movies.empty:
-            st.write(f"Movies directed by {director_name}:")
-            st.write(director_movies[['title', 'genre_1', 'imdbRating']].rename(
-                columns={'title': 'Title', 'genre_1': 'Genre', 'imdbRating': 'IMDB Rating'}
-            ))
-
-            # 计算平均评分
-            avg_rating = director_movies['imdbRating'].mean()
-            st.write(f"Average IMDB Rating for {director_name}'s movies: {avg_rating:.2f}")
+                avg_rating = director_movies['imdbRating'].mean()
+                st.write(f"Average IMDB Rating for {selected_director}'s movies: {avg_rating:.2f}")
         else:
-            st.write(f"No movies found for director: {director_name}")
+            st.write(f"No directors found matching: {director_name}")
 
 # 功能 5: 按电影名字搜索
 elif option == "Search by Movie":
     st.header("Search by Movie")
 
-    # 用户输入电影名字
     movie_name = st.text_input("Enter Movie Title:")
     if movie_name:
-        # 搜索包含该电影名字的电影
-        movie = df[df['title'].str.contains(movie_name, case=False, na=False)]
+        matching_movies = df['title'].dropna().unique()
+        matching_movies = [title for title in matching_movies if movie_name.lower() in title.lower()]
+        if matching_movies:
+            selected_movie = st.selectbox("Select a Movie:", matching_movies)
+            if selected_movie:
+                movie_details = df[df['title'] == selected_movie]
+                st.write(f"Details for '{selected_movie}':")
+                st.dataframe(movie_details[['title', 'director', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
+                    columns={
+                        'title': 'Title', 'director': 'Director', 'year': 'Year',
+                        'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes', 'rating': 'Rating', 'awards': 'Awards'
+                    }
+                ))
 
-        if not movie.empty:
-            st.write(f"Details for movies matching '{movie_name}':")
-            st.write(movie[['title', 'director', 'genre_1', 'imdbRating', 'country']].rename(
-                columns={'title': 'Title', 'director': 'Director', 'genre_1': 'Genre', 'imdbRating': 'IMDB Rating', 'country': 'Country'}
-            ))
+                movie_director = movie_details['director'].iloc[0]
+                other_movies = df[df['director'] == movie_director]
+                st.write(f"Other movies by {movie_director}:")
+                st.dataframe(other_movies[['title', 'year', 'imdbRating', 'imdbVotes']].rename(
+                    columns={'title': 'Title', 'year': 'Year', 'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes'}
+                ))
 
-            # 找出导演的其他作品
-            movie_director = movie['director'].iloc[0]
-            other_movies = df[df['director'] == movie_director].drop_duplicates(subset=['title'])
-
-            st.write(f"Other movies by {movie_director}:")
-            st.write(other_movies[['title', 'imdbRating']].rename(
-                columns={'title': 'Title', 'imdbRating': 'IMDB Rating'}
-            ))
-
-            # 计算这些作品的平均评分
-            avg_rating = other_movies['imdbRating'].mean()
-            st.write(f"Average IMDB Rating for {movie_director}'s movies: {avg_rating:.2f}")
+                avg_rating = other_movies['imdbRating'].mean()
+                st.write(f"Average IMDB Rating for {movie_director}'s movies: {avg_rating:.2f}")
+        else:
+            st.write(f"No movies found matching: {movie_name}")
         else:
             st.write(f"No movies found matching: {movie_name}")
