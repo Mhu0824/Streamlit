@@ -166,5 +166,3 @@ elif option == "Search by Movie":
                 st.write(f"Average IMDB Rating for {movie_director}'s movies: {avg_rating:.2f}")
         else:
             st.write(f"No movies found matching: {movie_name}")
-        else:
-            st.write(f"No movies found matching: {movie_name}")
