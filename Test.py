@@ -165,9 +165,15 @@ elif option == "Search by Movie":
                 selected_movie, selected_year = selected_movie_with_year.rsplit(" (", 1)
                 selected_year = selected_year.rstrip(")")
                 
+                # 输出调试信息，确保选中的电影 title 和 year 正确
+                st.write(f"Selected Movie: {selected_movie}, Year: {selected_year}")
+                
                 # 根据 title 和 year 筛选唯一电影
                 movie_details = df[(df['title'] == selected_movie) & (df['year'] == int(selected_year))]
                 
+                # 输出筛选的电影数量，帮助调试
+                st.write(f"Movies found in dataset: {movie_details.shape[0]}")
+
                 if not movie_details.empty:
                     # 获取导演名字
                     director_name = movie_details['director'].iloc[0] if not movie_details.empty else "Unknown"
@@ -204,4 +210,3 @@ elif option == "Search by Movie":
                     st.write("No movie details found for the selected movie.")
         else:
             st.write("No matching movies found.")
-
