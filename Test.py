@@ -148,6 +148,7 @@ elif option == "Search by Movie":
 
     # 用户输入电影名字，自动联想匹配结果（显示年份）
     movie_name = st.text_input("Enter Movie Title:")
+    
     if movie_name:
         matching_movies = sorted(
             {f"{title.strip()} ({year})" for title, year in zip(df['title'], df['year']) 
@@ -178,18 +179,20 @@ elif option == "Search by Movie":
                         }
                     )
                 )
-                # 显示导演其他作品
-                          other_movies = df[df['director'] == director_name]
-                          st.write(f"Other movies by {director_name}:")
-                          st.dataframe(
-                              other_movies[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes']].rename(
-                                  columns={
-                                      'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
-                                      'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes'
-                                  }
-                              )
-                          )
                 
-                          # 计算导演其他电影平均评分
-                          avg_rating = other_movies['imdbRating'].mean()
-                          st.write(f"Average IMDB Rating for {director_name}'s movies: {avg_rating:.2f}")
+                # 显示导演其他作品
+                other_movies = df[df['director'] == director_name]
+                st.write(f"Other movies by {director_name}:")
+                st.dataframe(
+                    other_movies[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
+                        columns={
+                            'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
+                            'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes',
+                            'rating': 'Rating', 'awards': 'Awards'
+                        }
+                    )
+                )
+                
+                # 计算导演其他电影的平均评分
+                avg_rating = other_movies['imdbRating'].mean()
+                st.write(f"Average IMDB Rating for {director_name}'s movies: {avg_rating:.2f}")
