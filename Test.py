@@ -150,9 +150,13 @@ elif option == "Search by Movie":
     movie_name = st.text_input("Enter Movie Title:")
 
     if movie_name:
+        # 清理数据集中的 title 和 year 列，去除空格并确保年份是整数
+        df['title_clean'] = df['title'].str.strip().str.lower()  # 清理 title 列
+        df['year_clean'] = df['year'].astype(str).str.strip()  # 确保年份是字符串并去除空格
+        
         # 获取所有与电影名称匹配的电影，并显示附带年份的电影名称
         matching_movies = sorted(
-            {f"{title.strip()} ({year})" for title, year in zip(df['title'], df['year']) 
+            {f"{title.strip()} ({year})" for title, year in zip(df['title_clean'], df['year_clean']) 
              if pd.notna(title) and movie_name.lower() in title.lower()}
         )
         
@@ -168,8 +172,8 @@ elif option == "Search by Movie":
                 # 输出调试信息，确保选中的电影 title 和 year 正确
                 st.write(f"Selected Movie: {selected_movie}, Year: {selected_year}")
                 
-                # 根据 title 和 year 筛选唯一电影
-                movie_details = df[(df['title'] == selected_movie) & (df['year'] == int(selected_year))]
+                # 根据 title_clean 和 year_clean 筛选唯一电影
+                movie_details = df[(df['title_clean'] == selected_movie.lower()) & (df['year_clean'] == selected_year)]
                 
                 # 输出筛选的电影数量，帮助调试
                 st.write(f"Movies found in dataset: {movie_details.shape[0]}")
