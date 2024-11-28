@@ -150,6 +150,7 @@ elif option == "Search by Movie":
     movie_name = st.text_input("Enter Movie Title:")
     
     if movie_name:
+        # 获取所有与电影名称匹配的电影，并显示附带年份的电影名称
         matching_movies = sorted(
             {f"{title.strip()} ({year})" for title, year in zip(df['title'], df['year']) 
              if pd.notna(title) and movie_name.lower() in title.lower()}
@@ -161,7 +162,7 @@ elif option == "Search by Movie":
             selected_movie, selected_year = selected_movie_with_year.rsplit(" (", 1)
             selected_year = selected_year.rstrip(")")
             
-            # 筛选唯一电影（使用 title 和 year 两个条件）
+            # 根据 title 和 year 筛选唯一电影
             movie_details = df[(df['title'] == selected_movie) & (df['year'] == int(selected_year))]
             
             if not movie_details.empty:
