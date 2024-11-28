@@ -157,14 +157,17 @@ elif option == "Search by Movie":
         
         if selected_movie_with_year:
             # 从选项中解析出电影名称和年份
-            selected_movie = selected_movie_with_year.rsplit(" (", 1)[0]
-            movie_details = df[df['title'] == selected_movie]
+            selected_movie, selected_year = selected_movie_with_year.rsplit(" (", 1)
+            selected_year = selected_year.rstrip(")")
+            
+            # 根据电影名称和年份筛选唯一结果
+            movie_details = df[(df['title'] == selected_movie) & (df['year'] == int(selected_year))]
             
             # 获取导演名字
-            director_name = movie_details['director'].iloc[0]
+            director_name = movie_details['director'].iloc[0] if not movie_details.empty else "Unknown"
             
             # 显示详细信息
-            st.write(f"Details for '{selected_movie}' created by {director_name}:")
+            st.write(f"Details for '{selected_movie} ({selected_year})' created by {director_name}:")
             st.dataframe(
                 movie_details[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
                     columns={
@@ -174,7 +177,6 @@ elif option == "Search by Movie":
                     }
                 )
             )
-
             # 显示导演其他作品
             other_movies = df[df['director'] == director_name]
             st.write(f"Other movies by {director_name}:")
