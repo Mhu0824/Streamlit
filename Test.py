@@ -114,55 +114,74 @@ elif option == "Top Genres by Country":
 elif option == "Search by Director":
     st.header("Search by Director")
 
+    # 用户输入导演名字，自动联想匹配结果
     director_name = st.text_input("Enter Director's Name:")
     if director_name:
-        matching_directors = df['director'].dropna().unique()
-        matching_directors = [name for name in matching_directors if director_name.lower() in name.lower()]
-        if matching_directors:
-            selected_director = st.selectbox("Select a Director:", matching_directors)
-            if selected_director:
-                director_movies = df[df['director'] == selected_director]
-                st.write(f"Movies directed by {selected_director}:")
-                st.dataframe(director_movies[['title', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
+        matching_directors = sorted(
+            {name.strip() for name in df['director'].dropna() if director_name.lower() in name.lower()}
+        )
+        selected_director = st.selectbox("Select a Director:", matching_directors)
+        
+        if selected_director:
+            # 筛选导演的电影
+            director_movies = df[df['director'].str.contains(selected_director, na=False)]
+            
+            # 显示导演电影及所需信息
+            st.write(f"Movies directed by {selected_director}:")
+            st.dataframe(
+                director_movies[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
                     columns={
-                        'title': 'Title', 'year': 'Year', 'imdbRating': 'IMDB Rating',
-                        'imdbVotes': 'IMDB Votes', 'rating': 'Rating', 'awards': 'Awards'
+                        'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
+                        'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes', 
+                        'rating': 'Rating', 'awards': 'Awards'
                     }
-                ))
+                )
+            )
 
-                avg_rating = director_movies['imdbRating'].mean()
-                st.write(f"Average IMDB Rating for {selected_director}'s movies: {avg_rating:.2f}")
-        else:
-            st.write(f"No directors found matching: {director_name}")
+            # 计算导演电影平均评分
+            avg_rating = director_movies['imdbRating'].mean()
+            st.write(f"Average IMDB Rating for {selected_director}'s movies: {avg_rating:.2f}")
 
-# 功能 5: 按电影名字搜索
+# 功能 2: 按电影名字搜索
 elif option == "Search by Movie":
     st.header("Search by Movie")
 
+    # 用户输入电影名字，自动联想匹配结果
     movie_name = st.text_input("Enter Movie Title:")
     if movie_name:
-        matching_movies = df['title'].dropna().unique()
-        matching_movies = [title for title in matching_movies if movie_name.lower() in title.lower()]
-        if matching_movies:
-            selected_movie = st.selectbox("Select a Movie:", matching_movies)
-            if selected_movie:
-                movie_details = df[df['title'] == selected_movie]
-                st.write(f"Details for '{selected_movie}':")
-                st.dataframe(movie_details[['title', 'director', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
+        matching_movies = sorted(
+            {title.strip() for title in df['title'].dropna() if movie_name.lower() in title.lower()}
+        )
+        selected_movie = st.selectbox("Select a Movie:", matching_movies)
+        
+        if selected_movie:
+            # 筛选电影的详细信息
+            movie_details = df[df['title'] == selected_movie]
+            
+            st.write(f"Details for '{selected_movie}':")
+            st.dataframe(
+                movie_details[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
                     columns={
-                        'title': 'Title', 'director': 'Director', 'year': 'Year',
-                        'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes', 'rating': 'Rating', 'awards': 'Awards'
+                        'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
+                        'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes', 
+                        'rating': 'Rating', 'awards': 'Awards'
                     }
-                ))
+                )
+            )
 
-                movie_director = movie_details['director'].iloc[0]
-                other_movies = df[df['director'] == movie_director]
-                st.write(f"Other movies by {movie_director}:")
-                st.dataframe(other_movies[['title', 'year', 'imdbRating', 'imdbVotes']].rename(
-                    columns={'title': 'Title', 'year': 'Year', 'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes'}
-                ))
+            # 显示导演其他作品
+            movie_director = movie_details['director'].iloc[0]
+            other_movies = df[df['director'] == movie_director]
+            st.write(f"Other movies by {movie_director}:")
+            st.dataframe(
+                other_movies[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes']].rename(
+                    columns={
+                        'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
+                        'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes'
+                    }
+                )
+            )
 
-                avg_rating = other_movies['imdbRating'].mean()
-                st.write(f"Average IMDB Rating for {movie_director}'s movies: {avg_rating:.2f}")
-        else:
-            st.write(f"No movies found matching: {movie_name}")
+            # 计算导演其他电影平均评分
+            avg_rating = other_movies['imdbRating'].mean()
+            st.write(f"Average IMDB Rating for {movie_director}'s movies: {avg_rating:.2f}")
