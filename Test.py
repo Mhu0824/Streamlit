@@ -17,10 +17,7 @@ import seaborn as sns
 @st.cache
 def load_data():
     url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/79fbc72545be4e83d253df4e6ac7a56b2f584001/movies_dataset.csv"
-    df = pd.read_csv(url, encoding='ISO-8859-1', thousands=',')
-    # 强制将 year 列转为整数类型，处理千位分隔符问题
-    df['year'] = pd.to_numeric(df['year'], errors='coerce').fillna(0).astype(int)
-    return df
+    df = pd.read_csv(url, encoding='ISO-8859-1')
 
 df = load_data()
 
@@ -144,7 +141,7 @@ elif option == "Search by Director":
             avg_rating = director_movies['imdbRating'].mean()
             st.write(f"Average IMDB Rating for {selected_director}'s movies: {avg_rating:.2f}")
 
-# 功能 2: 按电影名字搜索
+# 功能 5: 按电影名字搜索
 elif option == "Search by Movie":
     st.header("Search by Movie")
 
@@ -189,34 +186,13 @@ elif option == "Search by Movie":
                             }
                         )
                     )
-                    
-                    # 显示导演其他作品
-                    other_movies = df[df['director'] == director_name]
-                    st.write(f"Other movies by {director_name}:")
-                    st.dataframe(
-                        other_movies[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
-                            columns={
-                                'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
-                                'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes',
-                                'rating': 'Rating', 'awards': 'Awards'
-                            }
-                        )
-                    )
-                    
-                    # 计算导演其他电影的平均评分
-                    avg_rating = other_movies['imdbRating'].mean()
-                    st.write(f"Average IMDB Rating for {director_name}'s movies: {avg_rating:.2f}")
-                else:
-                    st.write("No movie details found for the selected movie.")
-        else:
-            st.write("No matching movies found.")
 
-# 冷门佳作功能
+# 功能 6: 冷门佳作
 elif option == "Hidden Gems":
     st.header("Hidden Gems: High Ratings but Low Votes")
     genre = st.selectbox("Select Genre:", sorted(df['genre_1'].dropna().unique()))
     if genre:
-        hidden_gems = df[(df['genre_1'] == genre) & (df['imdbVotes'] < 1000) & (df['imdbRating'] >= 7.5)]
+        hidden_gems = df[(df['genre_1'] == genre) & (df['imdbVotes'] < 1000) & (df['imdbRating'] >= 8.0)]
         hidden_gems_sorted = hidden_gems.sort_values(by='imdbRating', ascending=False)
         if not hidden_gems_sorted.empty:
             st.write(f"Hidden Gems in {genre}:")
