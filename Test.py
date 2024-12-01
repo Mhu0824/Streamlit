@@ -28,7 +28,7 @@ st.title("🎬 Movie Data Dashboard")
 # 功能选择
 option = st.sidebar.radio(
     "Choose a feature:",
-    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie")
+    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie", "Hidden Gems")
 )
 
 # 功能 1: 数据概览
