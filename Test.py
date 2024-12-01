@@ -15,11 +15,17 @@ import seaborn as sns
 # 加载数据
 @st.cache
 def load_data():
-    # 使用GitHub上的CSV文件链接或本地文件路径https://github.com/Mhu0824/Streamlit/blob/8b2b48a91c5c93051601aa0a97eeed04053361d1/movies_dataset.csv
-    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/8b2b48a91c5c93051601aa0a97eeed04053361d1/movies_dataset.csv"
-    df = pd.read_csv(url, encoding='ISO-8859-1', thousands=',')
-    # 强制将 year 列转为整数类型，处理千位分隔符问题
+    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/79fbc72545be4e83d253df4e6ac7a56b2f584001/movies_dataset.csv"
+    df = pd.read_csv(url, encoding='ISO-8859-1')
+
+    # 查看 year 列的前 20 行
+    st.write(df['year'].head(20))  # 调试用
+
+    # 去除千位分隔符
     df['year'] = df['year'].astype(str).str.replace(',', '').astype(int)
+
+    # 查看数据类型确认是否正确
+    st.write(df['year'].dtype)
 
     return df
     
