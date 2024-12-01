@@ -25,8 +25,8 @@ st.header("Search by Director")
 director_name = st.text_input("Enter Director's Name:")
 if director_name:
     matching_directors = sorted(
-        set(df['director'].dropna().unique())  # 提取所有导演名字
-        if director_name.lower() in director.lower()
+        [director for director in df['director'].dropna().unique() 
+         if director_name.lower() in director.lower()]
     )
     selected_director = st.selectbox("Select a Director:", matching_directors)
     if selected_director:
