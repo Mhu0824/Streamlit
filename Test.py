@@ -208,3 +208,39 @@ elif option == "Search by Movie":
                     st.write("No movie details found for the selected movie.")
         else:
             st.write("No matching movies found.")
+
+#冷门佳作
+elif option == "Hidden Gems by Genre":
+    st.header("Hidden Gems by Genre")
+    
+    # 设置冷门佳作的标准
+    max_votes = st.slider("Max Votes (for a movie to be considered niche):", 0, 5000, 1000, step=100)
+    min_rating = st.slider("Min Rating (for a movie to be considered a gem):", 0.0, 10.0, 8.0, step=0.1)
+    
+    # 按标准筛选电影
+    hidden_gems = df[(df['imdbVotes'] < max_votes) & (df['imdbRating'] >= min_rating)]
+    
+    if not hidden_gems.empty:
+        # 获取所有的主类型
+        genres = sorted(hidden_gems['genre_1'].dropna().unique())
+        selected_genre = st.selectbox("Select a Genre:", ["All"] + genres)
+        
+        # 按选择的类型过滤
+        if selected_genre != "All":
+            hidden_gems = hidden_gems[hidden_gems['genre_1'] == selected_genre]
+        
+        if not hidden_gems.empty:
+            # 展示冷门佳作
+            st.write(f"Hidden Gems in Genre: {selected_genre if selected_genre != 'All' else 'All Genres'}")
+            st.dataframe(
+                hidden_gems[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes']].rename(
+                    columns={
+                        'title': 'Title', 'genre_1': 'Genre', 'year': 'Year',
+                        'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes'
+                    }
+                )
+            )
+        else:
+            st.write(f"No hidden gems found in the selected genre: {selected_genre}.")
+    else:
+        st.write("No hidden gems found based on the current criteria.")
