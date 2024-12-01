@@ -2,6 +2,16 @@
 import streamlit as st
 import pandas as pd
 
+# 加载数据
+# 加载数据
+@st.cache
+def load_data():
+    # 使用GitHub上的CSV文件链接或本地文件路径
+    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/d6d8457d63867b435bfdea9c541afd71495829f9/movies_dataset.csv"
+    return pd.read_csv(url, encoding='ISO-8859-1')
+
+df = load_data()
+
 # 页面设置：添加页面标题和图标
 st.set_page_config(page_title="Movie Data Dashboard", page_icon="🎬", layout="wide")
 
