@@ -22,10 +22,6 @@ def load_data():
 # 数据加载
 df = load_data()
 
-# 数据加载后清理 `year` 列
-df['year'] = pd.to_numeric(df['year'], errors='coerce')  # 将非数字转换为 NaN
-df = df[df['year'].notna()]  # 删除 NaN 行
-
 # 处理电影类型数据
 genres = pd.concat([
     df['genre_1'].str.strip(), 
