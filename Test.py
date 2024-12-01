@@ -16,7 +16,7 @@ import seaborn as sns
 @st.cache
 def load_data():
     # 使用GitHub上的CSV文件链接或本地文件路径
-    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/7597d71c7c5646ee30b516460841ebb7defbcdc8/movies_dataset.csv"
+    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/79fbc72545be4e83d253df4e6ac7a56b2f584001/movies_dataset.csv"
     return pd.read_csv(url, encoding='ISO-8859-1')
 
   # 清理 `year` 列
