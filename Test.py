@@ -13,12 +13,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # 加载数据
-# 加载数据并修复年数据格式问题
 @st.cache
 def load_data():
-    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/79fbc72545be4e83d253df4e6ac7a56b2f584001/movies_dataset.csv"
-    df = pd.read_csv(url, encoding='ISO-8859-1')
+    # 使用GitHub上的CSV文件链接或本地文件路径
+    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/7597d71c7c5646ee30b516460841ebb7defbcdc8/movies_dataset.csv"
+    return pd.read_csv(url, encoding='ISO-8859-1')
 
+# 数据加载
 df = load_data()
 
 # 标题
@@ -27,7 +28,7 @@ st.title("🎬 Movie Data Dashboard")
 # 功能选择
 option = st.sidebar.radio(
     "Choose a feature:",
-    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie", "Hidden Gems")
+    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie")
 )
 
 # 功能 1: 数据概览
@@ -40,7 +41,7 @@ if option == "Overview":
 elif option == "Genre Distribution":
     st.header("Genre Distribution")
 
-     # 处理电影类型数据
+    # 处理电影类型数据
     genres = pd.concat([
         df['genre_1'].str.strip(), 
         df['genre_2'].str.strip(), 
@@ -48,7 +49,7 @@ elif option == "Genre Distribution":
         df['genre_4'].str.strip(),
         df['genre_5'].str.strip()
     ]).dropna()
-    
+
     # 计算所有类型的分布
     genre_counts = genres.value_counts()
 
@@ -76,15 +77,15 @@ elif option == "Genre Distribution":
 
 # 功能 3: 不同国家电影类型
 elif option == "Top Genres by Country":
-    # 拆分 `country` 列
+    # 拆分 country 列
     df['country'] = df['country'].str.split(", ")
     df_exploded = df.explode('country')  # 展开成多行，每行一个国家
 
-    # 只使用 `genre_1` 的内容
+    # 只使用 genre_1 的内容
     df_exploded = df_exploded[['country', 'genre_1']].dropna()
     df_exploded['genre_1'] = df_exploded['genre_1'].str.strip()  # 去掉空格
 
-    # 按国家和 `genre_1` 统计
+    # 按国家和 genre_1 统计
     country_genre_counts = df_exploded.groupby(['country', 'genre_1']).size().reset_index(name='count')
 
     # 用户选择国家
@@ -141,7 +142,7 @@ elif option == "Search by Director":
             avg_rating = director_movies['imdbRating'].mean()
             st.write(f"Average IMDB Rating for {selected_director}'s movies: {avg_rating:.2f}")
 
-# 功能 5: 按电影名字搜索
+# 功能 2: 按电影名字搜索
 elif option == "Search by Movie":
     st.header("Search by Movie")
 
@@ -186,7 +187,28 @@ elif option == "Search by Movie":
                             }
                         )
                     )
-
+                    
+                    # 显示导演其他作品
+                    other_movies = df[df['director'] == director_name]
+                    st.write(f"Other movies by {director_name}:")
+                    st.dataframe(
+                        other_movies[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
+                            columns={
+                                'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
+                                'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes',
+                                'rating': 'Rating', 'awards': 'Awards'
+                            }
+                        )
+                    )
+                    
+                    # 计算导演其他电影的平均评分
+                    avg_rating = other_movies['imdbRating'].mean()
+                    st.write(f"Average IMDB Rating for {director_name}'s movies: {avg_rating:.2f}")
+                else:
+                    st.write("No movie details found for the selected movie.")
+        else:
+            st.write("No matching movies found.")
+            
 # 功能 6: 冷门佳作
 elif option == "Hidden Gems":
     st.header("Hidden Gems: High Ratings but Low Votes")
