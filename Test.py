@@ -211,32 +211,20 @@ elif option == "Search by Movie":
 
 #冷门佳作
 # 冷门佳作功能
-elif option == "Hidden Gems by Genre":
-    st.header("Hidden Gems by Genre")
-    
-    max_votes = st.slider("Max Votes (for a movie to be considered niche):", 0, 5000, 1000, step=100)
-    min_rating = st.slider("Min Rating (for a movie to be considered a gem):", 0.0, 10.0, 8.0, step=0.1)
-    
-    hidden_gems = df[(df['imdbVotes'] < max_votes) & (df['imdbRating'] >= min_rating)]
-    
-    if not hidden_gems.empty:
-        genres = sorted(hidden_gems['genre_1'].dropna().unique())
-        selected_genre = st.selectbox("Select a Genre:", ["All"] + genres)
-        
-        if selected_genre != "All":
-            hidden_gems = hidden_gems[hidden_gems['genre_1'] == selected_genre]
-        
-        if not hidden_gems.empty:
-            st.write(f"Hidden Gems in Genre: {selected_genre if selected_genre != 'All' else 'All Genres'}")
-            st.dataframe(
-                hidden_gems[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes']].rename(
-                    columns={
-                        'title': 'Title', 'genre_1': 'Genre', 'year': 'Year',
-                        'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes'
-                    }
-                )
+st.header("Hidden Gems: High Ratings but Low Votes")
+genre = st.selectbox("Select Genre:", sorted(df['genre_1'].dropna().unique()))
+if genre:
+    hidden_gems = df[(df['genre_1'] == genre) & (df['imdbVotes'] < 1000) & (df['imdbRating'] >= 8.0)]
+    hidden_gems_sorted = hidden_gems.sort_values(by='imdbRating', ascending=False)
+    if not hidden_gems_sorted.empty:
+        st.write(f"Hidden Gems in {genre}:")
+        st.dataframe(
+            hidden_gems_sorted[['title', 'year', 'imdbRating', 'imdbVotes']].rename(
+                columns={
+                    'title': 'Title', 'year': 'Year', 
+                    'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes'
+                }
             )
-        else:
-            st.write(f"No hidden gems found in the selected genre: {selected_genre}.")
+        )
     else:
-        st.write("No hidden gems found based on the current criteria.")
+        st.write(f"No hidden gems found for {genre}.")
