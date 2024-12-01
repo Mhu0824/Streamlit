@@ -3,6 +3,82 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import streamlit as st
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Set page config for a wide layout
+st.set_page_config(page_title="Movie Data Dashboard", layout="wide", initial_sidebar_state="expanded")
+
+# Custom styling for the app using .streamlit/config.toml (for illustration)
+# Uncomment below if you want to use the config file
+# .streamlit/config.toml
+# [theme]
+# primaryColor = "#4CAF50"
+# backgroundColor = "#F0F0F0"
+# secondaryBackgroundColor = "#FFFFFF"
+# textColor = "#000000"
+# font = "sans serif"
+
+# Sample Data (You can load your own data here)
+data = {
+    'title': ['Movie A', 'Movie B', 'Movie C', 'Movie D', 'Movie E'],
+    'rating': [8.2, 7.5, 6.1, 8.9, 7.4],
+    'genre_1': ['Action', 'Comedy', 'Action', 'Drama', 'Comedy'],
+    'genre_2': ['Adventure', 'Romance', 'Thriller', 'Action', 'Adventure'],
+}
+df = pd.DataFrame(data)
+
+# Sidebar with custom sections
+st.sidebar.title("Movie Data Dashboard")
+st.sidebar.markdown("## Welcome to the Movie Dashboard")
+st.sidebar.markdown(
+    """
+    This dashboard lets you explore movie data in various ways.
+    Use the menu to select different features!
+    """
+)
+
+# Add an image to the sidebar
+st.sidebar.image('https://example.com/logo.png', use_column_width=True)
+
+# Dropdown menu for selecting genre
+selected_genre = st.sidebar.selectbox("Choose Genre", df['genre_1'].unique())
+
+# Filtering movies based on the selected genre
+filtered_df = df[df['genre_1'] == selected_genre]
+
+# Layout with columns
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    st.header("Movie Ratings")
+    st.write("Explore movie ratings by genre.")
+    
+    # Rating filter slider
+    rating_filter = st.slider("Select Rating Range", 0, 10, (4, 8))
+    filtered_df = df[(df['rating'] >= rating_filter[0]) & (df['rating'] <= rating_filter[1])]
+    st.write(filtered_df)
+
+with col2:
+    st.image('https://example.com/genre_image.png', caption=f"Movies in {selected_genre} genre")
+
+# Expander widget for additional information
+with st.expander("Click to see more details"):
+    st.write("Here’s additional information about the selected genre and its ratings...")
+
+# Seaborn styling for a better chart look
+sns.set(style="whitegrid")
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.countplot(data=filtered_df, x="genre_1", ax=ax)
+ax.set_title("Genre Distribution")
+st.pyplot(fig)
+
+# Footer
+st.markdown("#### Powered by Streamlit and Movie Data")
+
+
 # Set page config at the beginning
 st.set_page_config(page_title="Movie Data Dashboard", layout="wide")
 
