@@ -22,6 +22,8 @@ def load_data():
 
 df = load_data()
 
+df['year'] = df['year'].astype(str).str.replace(r'\D', '', regex=True)
+
 # 标题
 st.title("🎬 Movie Data Dashboard")
 
