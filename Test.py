@@ -212,14 +212,20 @@ elif option == "Search by Movie":
             st.write("No matching movies found.")
             
 # 功能 6: 冷门佳作
+# 功能 6: 冷门佳作
 elif option == "Hidden Gems":
     st.header("Hidden Gems: High Ratings but Low Votes")
     
     # Select Genre Dropdown
     genre = st.selectbox("Select Genre:", sorted(df['genre_1'].dropna().unique()))
     
-    # Rating Range Slider
-    rating_filter = st.slider("Select IMDB Rating Range", 0, 10, (7.5, 10.0))
+    # Rating Range Slider (with float step)
+    rating_filter = st.slider(
+        "Select IMDB Rating Range", 
+        min_value=0.0, max_value=10.0, 
+        value=(7.5, 10.0),
+        step=0.1  # Allow decimal steps for the rating range
+    )
     
     if genre:
         # Filter the hidden gems based on the selected genre and rating range
