@@ -13,11 +13,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # 加载数据
+# 加载数据并修复年数据格式问题
 @st.cache
 def load_data():
-    # 使用GitHub上的CSV文件链接或本地文件路径
     url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/79fbc72545be4e83d253df4e6ac7a56b2f584001/movies_dataset.csv"
-    return pd.read_csv(url, encoding='ISO-8859-1')
+    df = pd.read_csv(url, encoding='ISO-8859-1', thousands=',')
+    # 强制将 year 列转为整数类型，处理千位分隔符问题
+    df['year'] = pd.to_numeric(df['year'], errors='coerce').fillna(0).astype(int)
+    return df
 
 df = load_data()
 
