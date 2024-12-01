@@ -13,23 +13,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # 加载数据
+# 加载数据
 @st.cache
 def load_data():
-    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/79fbc72545be4e83d253df4e6ac7a56b2f584001/movies_dataset.csv"
-    df = pd.read_csv(url, encoding='ISO-8859-1')
+    # 使用GitHub上的CSV文件链接或本地文件路径https://github.com/Mhu0824/Streamlit/blob/76efd3d8e75fb375dd973aca3c576da10b951edf/movies_dataset.csv
+    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/76efd3d8e75fb375dd973aca3c576da10b951edf/movies_dataset.csv"
+    return pd.read_csv(url, encoding='ISO-8859-1')
 
-    # 查看 year 列的前 20 行
-    st.write(df['year'].head(20))  # 调试用
-
-    # 去除千位分隔符
-    df['year'] = df['year'].astype(str).str.replace(',', '').astype(int)
-
-    # 查看数据类型确认是否正确
-    st.write(df['year'].dtype)
-
-    return df
-    
-# 数据加载
 df = load_data()
 
 # 标题
