@@ -19,9 +19,6 @@ def load_data():
     url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/7597d71c7c5646ee30b516460841ebb7defbcdc8/movies_dataset.csv"
     return pd.read_csv(url, encoding='ISO-8859-1')
 
-# 数据加载
-df = load_data()
-
   # 清理 `year` 列
     df['year'] = pd.to_numeric(df['year'], errors='coerce')  # 将非数字转换为 NaN
     df = df[df['year'].notna()]  # 删除 NaN 行
