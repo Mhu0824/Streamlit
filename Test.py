@@ -21,15 +21,6 @@ def load_data():
 
 df = load_data()
 
-# 处理电影类型数据
-genres = pd.concat([
-    df['genre_1'].str.strip(), 
-    df['genre_2'].str.strip(), 
-    df['genre_3'].str.strip(),
-    df['genre_4'].str.strip(),
-    df['genre_5'].str.strip()
-]).dropna()
-
 # 标题
 st.title("🎬 Movie Data Dashboard")
 
@@ -49,6 +40,15 @@ if option == "Overview":
 elif option == "Genre Distribution":
     st.header("Genre Distribution")
 
+     # 处理电影类型数据
+    genres = pd.concat([
+        df['genre_1'].str.strip(), 
+        df['genre_2'].str.strip(), 
+        df['genre_3'].str.strip(),
+        df['genre_4'].str.strip(),
+        df['genre_5'].str.strip()
+    ]).dropna()
+    
     # 计算所有类型的分布
     genre_counts = genres.value_counts()
 
