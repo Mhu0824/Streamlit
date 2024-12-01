@@ -2,6 +2,12 @@
 import streamlit as st
 import pandas as pd
 
+# 设置页面配置
+st.set_page_config(layout="wide")
+
+# 你的代码继续在这里...
+st.title("Movie Explorer")
+
 # 加载数据
 @st.cache_data
 def load_data():
@@ -15,10 +21,6 @@ def load_data():
 
 # 数据加载
 df = load_data()
-
-# 设置页面布局
-st.set_page_config(layout="wide")
-st.title("🎬 Movie Explorer Dashboard")
 
 # 功能 1: 按导演搜索
 st.header("Search by Director")
