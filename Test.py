@@ -214,12 +214,25 @@ elif option == "Search by Movie":
 # 功能 6: 冷门佳作
 elif option == "Hidden Gems":
     st.header("Hidden Gems: High Ratings but Low Votes")
+    
+    # Select Genre Dropdown
     genre = st.selectbox("Select Genre:", sorted(df['genre_1'].dropna().unique()))
+    
+    # Rating Range Slider
+    rating_filter = st.slider("Select IMDB Rating Range", 0, 10, (7.5, 10.0))
+    
     if genre:
-        hidden_gems = df[(df['genre_1'] == genre) & (df['imdbVotes'] < 1000) & (df['imdbRating'] >= 7.5)]
+        # Filter the hidden gems based on the selected genre and rating range
+        hidden_gems = df[
+            (df['genre_1'] == genre) & 
+            (df['imdbVotes'] < 1000) & 
+            (df['imdbRating'] >= rating_filter[0]) & 
+            (df['imdbRating'] <= rating_filter[1])
+        ]
         hidden_gems_sorted = hidden_gems.sort_values(by='imdbRating', ascending=False)
+        
         if not hidden_gems_sorted.empty:
-            st.write(f"Hidden Gems in {genre}:")
+            st.write(f"Hidden Gems in {genre} with IMDB Rating between {rating_filter[0]} and {rating_filter[1]}:")
             st.dataframe(
                 hidden_gems_sorted[['title', 'year', 'imdbRating', 'imdbVotes']].rename(
                     columns={
@@ -229,4 +242,4 @@ elif option == "Hidden Gems":
                 )
             )
         else:
-            st.write(f"No hidden gems found for {genre}.")
+            st.write(f"No hidden gems found for {genre} in the selected rating range.")
