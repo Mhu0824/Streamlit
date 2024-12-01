@@ -214,7 +214,7 @@ elif option == "Hidden Gems":
     st.header("Hidden Gems: High Ratings but Low Votes")
     genre = st.selectbox("Select Genre:", sorted(df['genre_1'].dropna().unique()))
     if genre:
-        hidden_gems = df[(df['genre_1'] == genre) & (df['imdbVotes'] < 1000) & (df['imdbRating'] >= 8.0)]
+        hidden_gems = df[(df['genre_1'] == genre) & (df['imdbVotes'] < 1000) & (df['imdbRating'] >= 7.5)]
         hidden_gems_sorted = hidden_gems.sort_values(by='imdbRating', ascending=False)
         if not hidden_gems_sorted.empty:
             st.write(f"Hidden Gems in {genre}:")
