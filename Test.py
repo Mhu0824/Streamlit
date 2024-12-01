@@ -22,11 +22,14 @@ def load_data():
 # 数据加载
 df = load_data()
 
-# 数据加载后清理 `year` 列
-df['year'] = pd.to_numeric(df['year'], errors='coerce')  # 将非数字转换为 NaN
-df = df[df['year'].notna()]  # 删除 NaN 行
-# 加载数据后修复 `year` 列格式
-df['year'] = df['year'].apply(lambda x: int(str(x).replace(",", "").strip()) if pd.notna(x) else x)
+  # 清理 `year` 列
+    df['year'] = pd.to_numeric(df['year'], errors='coerce')  # 将非数字转换为 NaN
+    df = df[df['year'].notna()]  # 删除 NaN 行
+    df['year'] = df['year'].apply(lambda x: int(str(x).replace(",", "").strip()) if pd.notna(x) else x)  # 修复年份格式
+
+    return df
+
+df = load_data()
 
 # 处理电影类型数据
 genres = pd.concat([
