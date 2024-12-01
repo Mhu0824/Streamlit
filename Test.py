@@ -28,7 +28,7 @@ st.title("🎬 Movie Data Dashboard")
 # 功能选择
 option = st.sidebar.radio(
     "Choose a feature:",
-    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie")
+    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie", "Hidden Gems")
 )
 
 # 功能 1: 数据概览
@@ -209,22 +209,22 @@ elif option == "Search by Movie":
         else:
             st.write("No matching movies found.")
 
-#冷门佳作
 # 冷门佳作功能
-st.header("Hidden Gems: High Ratings but Low Votes")
-genre = st.selectbox("Select Genre:", sorted(df['genre_1'].dropna().unique()))
-if genre:
-    hidden_gems = df[(df['genre_1'] == genre) & (df['imdbVotes'] < 1000) & (df['imdbRating'] >= 8.0)]
-    hidden_gems_sorted = hidden_gems.sort_values(by='imdbRating', ascending=False)
-    if not hidden_gems_sorted.empty:
-        st.write(f"Hidden Gems in {genre}:")
-        st.dataframe(
-            hidden_gems_sorted[['title', 'year', 'imdbRating', 'imdbVotes']].rename(
-                columns={
-                    'title': 'Title', 'year': 'Year', 
-                    'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes'
-                }
+elif option == "Hidden Gems":
+    st.header("Hidden Gems: High Ratings but Low Votes")
+    genre = st.selectbox("Select Genre:", sorted(df['genre_1'].dropna().unique()))
+    if genre:
+        hidden_gems = df[(df['genre_1'] == genre) & (df['imdbVotes'] < 1000) & (df['imdbRating'] >= 8.0)]
+        hidden_gems_sorted = hidden_gems.sort_values(by='imdbRating', ascending=False)
+        if not hidden_gems_sorted.empty:
+            st.write(f"Hidden Gems in {genre}:")
+            st.dataframe(
+                hidden_gems_sorted[['title', 'year', 'imdbRating', 'imdbVotes']].rename(
+                    columns={
+                        'title': 'Title', 'year': 'Year', 
+                        'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes'
+                    }
+                )
             )
-        )
-    else:
-        st.write(f"No hidden gems found for {genre}.")
+        else:
+            st.write(f"No hidden gems found for {genre}.")
