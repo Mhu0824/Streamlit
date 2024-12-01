@@ -15,8 +15,8 @@ import seaborn as sns
 # 加载数据
 @st.cache
 def load_data():
-    # 使用GitHub上的CSV文件链接或本地文件路径
-    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/7597d71c7c5646ee30b516460841ebb7defbcdc8/movies_dataset.csv"
+    # 使用GitHub上的CSV文件链接或本地文件路径https://github.com/Mhu0824/Streamlit/blob/8b2b48a91c5c93051601aa0a97eeed04053361d1/movies_dataset.csv
+    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/8b2b48a91c5c93051601aa0a97eeed04053361d1/movies_dataset.csv"
     return pd.read_csv(url, encoding='ISO-8859-1')
 
 # 数据加载
