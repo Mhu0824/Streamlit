@@ -25,9 +25,6 @@ df = load_data()
 # 数据加载后清理 `year` 列
 df['year'] = pd.to_numeric(df['year'], errors='coerce')  # 将非数字转换为 NaN
 df = df[df['year'].notna()]  # 删除 NaN 行
-df['year'] = df['year'].astype(int)  # 转换为整数
-# 加载数据后修复 `year` 列格式
-df['year'] = df['year'].apply(lambda x: int(str(x).replace(",", "").strip()) if pd.notna(x) else x)
 
 # 处理电影类型数据
 genres = pd.concat([
