@@ -19,7 +19,8 @@ def load_data():
     url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/8b2b48a91c5c93051601aa0a97eeed04053361d1/movies_dataset.csv"
     df = pd.read_csv(url, encoding='ISO-8859-1', thousands=',')
     # 强制将 year 列转为整数类型，处理千位分隔符问题
-    df['year'] = pd.to_numeric(df['year'], errors='coerce').fillna(0).astype(int)
+    df['year'] = df['year'].astype(str).str.replace(',', '').astype(int)
+
     return df
     
 # 数据加载
