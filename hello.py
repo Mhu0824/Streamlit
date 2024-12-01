@@ -2,11 +2,66 @@
 import streamlit as st
 import pandas as pd
 
-# 设置页面配置
-st.set_page_config(layout="wide")
+# 页面设置：添加页面标题和图标
+st.set_page_config(page_title="Movie Data Dashboard", page_icon="🎬", layout="wide")
 
-# 你的代码继续在这里...
-st.title("Movie Explorer")
+# 页面标题
+st.title("🎬 Movie Data Dashboard")
+
+# 引导信息，使用Markdown来渲染文本
+st.markdown("""
+    **Welcome to the Movie Data Dashboard!** 🎥  
+    This app allows you to explore a variety of insights from a vast movie dataset.  
+    Whether you're interested in genre distributions, director search, or discovering hidden gems, this dashboard has it all.
+
+    ### 🔥 Features:
+    1. **Overview**: A guide to the app and its features.
+    2. **Genre Distribution**: View the most popular genres.
+    3. **Top Genres by Country**: Discover the top genres by country.
+    4. **Search by Director**: Search movies by your favorite directors.
+    5. **Search by Movie**: Find your favorite movies and get detailed information.
+    6. **Hidden Gems**: Explore high-rated movies with low votes.
+    
+    Ready to explore? Start by selecting an option from the sidebar! 🌟
+""")
+
+# 功能选择，使用 `selectbox` 或 `radio` 使用户有操作感
+option = st.sidebar.radio(
+    "Choose a feature:",
+    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie", "Hidden Gems")
+)
+
+# 功能 1: 数据概览
+if option == "Overview":
+    st.header("Overview")
+    
+    st.write("""
+    Welcome to the **Movie Data Dashboard**! This app allows you to explore various trends and insights from a large movie dataset. Here's a quick guide to the features available in this dashboard:
+
+    ### 1. **Overview**
+    - This section introduces the app and gives you a quick overview of what you can explore in the different sections of the app.
+
+    ### 2. **Genre Distribution**
+    - Explore the distribution of movie genres across the dataset. View how different genres are represented and analyze the most common genres.
+
+    ### 3. **Top Genres by Country**
+    - Dive into the most popular genres across different countries. Select a country and view the top 10 genres that are most watched in that country.
+
+    ### 4. **Search by Director**
+    - Search for movies directed by a specific director. You can view all movies by the selected director and their average IMDB rating.
+
+    ### 5. **Search by Movie**
+    - If you have a movie title in mind, use this feature to search for it. You'll see the movie's details, including its genre, rating, and other related information.
+
+    ### 6. **Hidden Gems**
+    - Looking for some underrated movies? This section highlights high-rated movies with fewer votes, perfect for discovering hidden gems in your favorite genres!
+
+    Feel free to explore each feature and discover new insights from the dataset.
+    """)
+    
+    # 你可以使用 `st.button()` 来增加交互元素，让用户点击后加载不同的内容
+    if st.button("Let's Explore!"):
+        st.write("Let's dive into the **Genre Distribution** section!")
 
 # 加载数据
 @st.cache_data
