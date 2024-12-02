@@ -288,61 +288,45 @@ elif option == "Hidden Gems":
 # 新功能: 电影评分与类别均分比较
 elif option == "Compare Movie Rating to Genre Average":
     st.header("Compare Movie Rating to Genre Average")
-    
-    # 输入电影名
-    movie_name = st.text_input("Enter Movie Name:")
-    
+
+    # 用户输入电影名字
+    movie_name = st.text_input("Enter Movie Title:")
+
     if movie_name:
-        # 查找电影信息
-        movie_data = df[df['title'].str.contains(movie_name, case=False, na=False)]
-        
-        if not movie_data.empty:
-            # 如果找到多部电影，让用户选择
-            if len(movie_data) > 1:
-                st.write("Multiple movies found. Please select one:")
-                selected_movie = st.selectbox(
-                    "Select a Movie:",
-                    movie_data['title'].tolist()
-                )
-                movie_data = movie_data[movie_data['title'] == selected_movie]
-            else:
-                selected_movie = movie_data.iloc[0]['title']
-            
-            # 显示选中电影信息
-            st.write(f"Analyzing: **{selected_movie}**")
-            movie_rating = movie_data.iloc[0]['imdbRating']
-            movie_genres = [genre for genre in movie_data.iloc[0][['genre_1', 'genre_2', 'genre_3', 'genre_4', 'genre_5']] if pd.notna(genre)]
-            
-            st.write(f"IMDB Rating: {movie_rating}")
-            st.write(f"Genres: {', '.join(movie_genres)}")
-            
-            # 计算类别均分
-            genre_avg_scores = {}
-            for genre in movie_genres:
-                genre_movies = df[df['genre_1'] == genre]
-                avg_score = genre_movies['imdbRating'].mean()
-                genre_avg_scores[genre] = avg_score
-            
-            # 数据对比与展示
-            comparison_data = pd.DataFrame({
-                'Genre': genre_avg_scores.keys(),
-                'Average Rating': genre_avg_scores.values(),
-                'Movie Rating': [movie_rating] * len(genre_avg_scores)
-            })
-            
-            st.write("Comparison Table:")
-            st.dataframe(comparison_data)
-            
-            # 图表展示
-            st.write("Comparison Chart:")
-            fig = px.bar(
-                comparison_data,
-                x='Genre',
-                y=['Average Rating', 'Movie Rating'],
-                barmode='group',
-                title=f"Comparison of {selected_movie}'s Rating with Genre Averages",
-                labels={'value': 'Rating', 'variable': 'Type'}
-            )
-            st.plotly_chart(fig)
+        # 确保列已存在并进行数据清理
+        if 'title_clean' not in df.columns:
+            df['title_clean'] = df['title'].str.strip().str.lower()  # 清理 title 列
+        if 'year_clean' not in df.columns:
+            df['year_clean'] = df['year'].astype(str).str.strip()  # 确保年份是字符串并去除空格
+
+        # 获取匹配的电影，并显示附带年份的电影名称
+        matching_movies = sorted(
+            {f"{title} ({year})" for title, year in zip(df['title'], df['year']) 
+             if pd.notna(title) and movie_name.lower() in title.lower()}
+        )
+
+        if matching_movies:
+            # 用户选择电影
+            selected_movie_with_year = st.selectbox("Select a Movie:", matching_movies)
+
+            if selected_movie_with_year:
+                # 从选项中解析电影名称和年份
+                selected_movie, selected_year = selected_movie_with_year.rsplit(" (", 1)
+                selected_year = selected_year.rstrip(")")
+
+                # 根据标题和年份筛选电影
+                movie_details = df[
+                    (df['title_clean'] == selected_movie.strip().lower()) &
+                    (df['year_clean'] == selected_year)
+                ]
+
+                if not movie_details.empty:
+                    st.write(f"Selected Movie: **{selected_movie} ({selected_year})**")
+                    st.write(movie_details)
+
+                    # 在这里添加与电影相关的其他功能
+                    # 比如展示图表或其他信息
+                else:
+                    st.error("No matching movie found with the given title and year.")
         else:
-            st.write("No movie found with the given name. Please try again.")
+            st.error("No matching movies found. Try a different search term.")
