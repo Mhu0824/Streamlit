@@ -366,7 +366,7 @@ elif option == "Compare Movie Rating to Genre Average":
                                 opacity=0.7  # 设置透明度
                             ))
                             
-                            # 绘制电影评分的柱状图
+                            # 绘制电影评分的柱状图（重复电影评分以匹配类别数）
                             fig.add_trace(go.Bar(
                                 x=genre_avg_rating['genre'],
                                 y=[movie_rating] * len(genre_avg_rating['genre']),  # 电影评分重复
