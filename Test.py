@@ -225,13 +225,8 @@ elif option == "Hidden Gems":
     
     # 自由选择投票数范围
     st.subheader("Step 2: Select IMDB Votes Range")
-    vote_ranges = [(0, 1000), (1001, 10000), (10001, 100000), (100001, 1000000), (1000001, 2000000)]
-    selected_vote_range = st.select_slider(
-        "IMDB Votes Range:",
-        options=vote_ranges,
-        value=(0, 1000),
-        format_func=lambda x: f"{x[0]} - {x[1]} votes"
-    )
+    min_votes = st.number_input("Minimum Votes", min_value=0, max_value=2000000, value=0, step=100)
+    max_votes = st.number_input("Maximum Votes", min_value=0, max_value=2000000, value=1000, step=100)
     
     # 自由选择评分范围
     st.subheader("Step 3: Customize Your Rating Range")
