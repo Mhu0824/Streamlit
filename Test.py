@@ -366,19 +366,10 @@ elif option == "Compare Movie Rating to Genre Average":
                                 opacity=0.7  # 设置透明度
                             ))
 
-                            # 绘制电影评分的柱状图
-                            fig.add_trace(go.Bar(
-                                x=[selected_movie] * len(comparison_df['Genre']),  # 让电影名重复，与平均分一一对应
-                                y=[movie_rating] * len(comparison_df['Genre']),
-                                name="Movie Rating",
-                                marker=dict(color='rgba(0, 114, 178, 0.7)'),  # 设置电影评分的颜色
-                                opacity=0.7  # 设置透明度
-                            ))
-
-                            # 在图表中添加电影评分的红线
+                            # 添加基准红线，横跨所有柱子
                             fig.add_trace(go.Scatter(
                                 x=comparison_df['Genre'],  # 与每个类别对齐
-                                y=[movie_rating] * len(comparison_df['Genre']),  # 电影评分（红线）
+                                y=[movie_rating] * len(comparison_df['Genre']),  # 使用电影评分创建基准线
                                 mode='lines',
                                 line=dict(color='red', width=2, dash='dash'),  # 红线设置
                                 name="Movie Rating (Red Line)",
