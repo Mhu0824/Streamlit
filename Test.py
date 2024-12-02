@@ -15,7 +15,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # 加载数据
-# 加载数据
 @st.cache
 def load_data():
     # 使用GitHub上的CSV文件链接或本地文件路径
@@ -51,9 +50,9 @@ if option == "Overview":
         
         - **Search by Movie**: Find movies by title, get details about the selected movie, and explore other works by the same director.
         
-        - **Unearth Hidden Movies: Rate & Vote**: This feature lets users adjust sliders for "vote" and "rating" to filter movies that meet specific criteria. It helps uncover hidden gems—highly rated movies with fewer votes, which might have been overlooked by a wider audience.
+        - **Unearth Hidden Movies: Rate & Vote**: Filters movies based on user-defined IMDb ratings and vote ranges to help discover hidden gems(highly rated movies with fewer votes, which might have been overlooked by a wider audience).
         
-        - **Compare Movie Rating to Genre Average**: This feature compares a movie’s IMDb rating with the average rating of its genre. It shows how the movie fares against similar films, helping users identify underrated or overrated movies within the same genre.
+        - **Compare Movie Rating to Genre Average**: Compares a movie’s rating to its genre's average rating. It shows how the movie fares against similar films, helping users identify underrated or overrated movies within the same genre.
     """)
 
 # 功能 2: 电影类型分布
