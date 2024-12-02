@@ -369,7 +369,7 @@ elif option == "Compare Movie Rating to Genre Average":
                             # 绘制电影评分的柱状图
                             fig.add_trace(go.Bar(
                                 x=[selected_movie] * len(genre_avg_rating['genre']),  # 让电影名重复，与平均分一一对应
-                                y=movie_ratings['rating'],
+                                y=[movie_rating] * len(genre_avg_rating['genre']),  # 电影评分重复
                                 name="Movie Rating",
                                 marker=dict(color='rgba(0, 114, 178, 0.7)'),  # 设置电影评分的颜色
                                 opacity=0.7  # 设置透明度
