@@ -366,24 +366,27 @@ elif option == "Compare Movie Rating to Genre Average":
                                 opacity=0.7  # 设置透明度
                             ))
                             
-                            # 绘制电影评分的柱状图（重复电影评分以匹配类别数）
+                            # 绘制电影评分的柱状图
+                            # 使用重复的评分值与每个类别对应
+                            movie_ratings = [movie_rating] * len(genre_avg_rating['genre'])
+                            
                             fig.add_trace(go.Bar(
                                 x=genre_avg_rating['genre'],
-                                y=[movie_rating] * len(genre_avg_rating['genre']),  # 电影评分重复
+                                y=movie_ratings,  # 电影评分的值
                                 name="Movie Rating",
-                                marker=dict(color='rgba(0, 114, 178, 0.7)'),  # 设置电影评分的颜色
+                                marker=dict(color='rgba(0, 114, 178, 0.7)'),  # 设置电影评分柱子的颜色
                                 opacity=0.7  # 设置透明度
                             ))
                             
                             # 添加水平基准线
                             fig.add_hline(
-                                y=movie_rating,  # 电影评分作为基准线
-                                line=dict(color='red', width=2, dash='dash'),  # 红色的虚线
+                                y=movie_rating,  # 使用电影评分值作为基准线
+                                line=dict(color='red', width=2, dash='dash'),  # 红色虚线
                                 annotation_text="Movie Rating",  # 标注文字
                                 annotation_position="top right"  # 文字位置
                             )
                             
-                            # 更新布局，确保图表更加美观
+                            # 更新布局
                             fig.update_layout(
                                 title=f"Comparison of {selected_movie} Rating vs Average Rating by Genre",
                                 xaxis_title="Genre",
@@ -396,7 +399,6 @@ elif option == "Compare Movie Rating to Genre Average":
                             
                             # 显示图形
                             st.plotly_chart(fig)
-
                         except Exception as e:
                             st.error(f"Error creating chart: {e}")
                     else:
