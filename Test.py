@@ -240,8 +240,8 @@ elif option == "Hidden Gems":
     # 数据筛选与展示
     filtered_movies = df[
         ((df['genre_1'] == genre) | (genre == "All")) &  # 如果选择了特定类别，则筛选该类别；否则选择所有类别
-        (df['imdbVotes'] >= selected_vote_range[0]) & 
-        (df['imdbVotes'] <= selected_vote_range[1]) & 
+        (df['imdbVotes'] >= min_votes) & 
+        (df['imdbVotes'] <= max_votes) & 
         (df['imdbRating'] >= rating_filter[0]) & 
         (df['imdbRating'] <= rating_filter[1])
     ]
@@ -249,7 +249,7 @@ elif option == "Hidden Gems":
 
     # 显示筛选结果
     st.write(
-        f"Movies in {genre if genre != 'All' else 'all genres'} with IMDB Votes between {selected_vote_range[0]} and {selected_vote_range[1]}, "
+        f"Movies in {genre if genre != 'All' else 'all genres'} with IMDB Votes between {min_votes} and {max_votes}, "
         f"and IMDB Rating between {rating_filter[0]} and {rating_filter[1]}:"
     )
     st.dataframe(
@@ -272,7 +272,7 @@ elif option == "Hidden Gems":
     
     if not hidden_gems_sorted.empty:
         st.write(
-            "For example, here are some *Hidden Gems* (highly rated movies(>7.0) with less than 1000 votes):"
+            "For example, here are some *Hidden Gems* (highly rated movies with less than 1000 votes):"
         )
         st.dataframe(
             hidden_gems_sorted[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes']].rename(
