@@ -51,9 +51,9 @@ if option == "Overview":
         
         - **Search by Movie**: Find movies by title, get details about the selected movie, and explore other works by the same director.
         
-        - **Unearth Hidden Movies: Rate & Vote**: Vote and rate to uncover movies that might have been overlooked, offering great viewing recommendations.
+        - **Unearth Hidden Movies: Rate & Vote**: This feature lets users adjust sliders for "vote" and "rating" to filter movies that meet specific criteria. It helps uncover hidden gems—highly rated movies with fewer votes, which might have been overlooked by a wider audience.
         
-        - **Compare Movie Rating to Genre Average**: Compare the IMDb rating of a movie to the average rating for its genre.
+        - **Compare Movie Rating to Genre Average**: This feature compares a movie’s IMDb rating with the average rating of its genre. It shows how the movie fares against similar films, helping users identify underrated or overrated movies within the same genre.
     """)
 
 # 功能 2: 电影类型分布
