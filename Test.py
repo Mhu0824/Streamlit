@@ -327,7 +327,7 @@ elif option == "Compare Movie Rating to Genre Average":
                     # 获取所选电影的类型
                     genres = movie_details.iloc[0][['genre_1', 'genre_2', 'genre_3', 'genre_4', 'genre_5']].dropna().tolist()
                 
-                    # 遍历类型，计算每种类型的均分并与该电影的评分对比
+                    # 计算每种类型的平均分
                     comparisons = []
                     for genre in genres:
                         genre_movies = df[
@@ -340,45 +340,53 @@ elif option == "Compare Movie Rating to Genre Average":
                 
                         if not genre_movies.empty:
                             genre_avg_rating = genre_movies['imdbRating'].mean()
-                            movie_rating = movie_details['imdbRating'].iloc[0]
                             comparisons.append({
                                 'Genre': genre,
-                                'Movie Rating': movie_rating,
-                                'Genre Avg Rating': genre_avg_rating,
-                                'Difference': movie_rating - genre_avg_rating  # 计算差异
-                            })
-                        else:
-                            comparisons.append({
-                                'Genre': genre,
-                                'Movie Rating': movie_details['imdbRating'].iloc[0],
-                                'Genre Avg Rating': None,
-                                'Difference': None
+                                'Genre Avg Rating': genre_avg_rating
                             })
                 
                     comparison_df = pd.DataFrame(comparisons)
                 
-                    # 绘制更直观的图表
-                    try:
-                        fig = px.bar(
-                            comparison_df,
-                            x='Genre',
-                            y='Difference',
-                            color='Difference',
-                            text='Difference',
-                            color_continuous_scale=['red', 'green'],  # 负值为红，正值为绿
-                            labels={'Difference': 'Rating Difference (Movie - Avg)'},
-                            title=f"Rating Difference: {selected_movie} vs Genre Averages"
-                        )
-                        fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')  # 显示差值
-                        fig.update_layout(
-                            xaxis_title="Genre",
-                            yaxis_title="Rating Difference",
-                            showlegend=False,
-                            coloraxis_showscale=False
-                        )
-                        st.plotly_chart(fig)
+                    if not comparison_df.empty:
+                        # 获取电影的评分
+                        movie_rating = movie_details['imdbRating'].iloc[0]
                 
-                    except Exception as e:
-                        st.error(f"Error creating chart: {e}")
+                        # 绘制图表
+                        try:
+                            fig = go.Figure()
+                
+                            # 添加类型平均分的柱子
+                            fig.add_trace(go.Bar(
+                                x=comparison_df['Genre'],
+                                y=comparison_df['Genre Avg Rating'],
+                                name='Genre Avg Rating',
+                                marker_color='orange'
+                            ))
+                
+                            # 添加红线表示电影评分
+                            fig.add_trace(go.Scatter(
+                                x=comparison_df['Genre'],
+                                y=[movie_rating] * len(comparison_df['Genre']),
+                                mode='lines',
+                                line=dict(color='red', dash='dash'),
+                                name=f"Movie Rating ({movie_rating})"
+                            ))
+                
+                            # 更新布局
+                            fig.update_layout(
+                                title=f"Movie vs Genre Avg Ratings for {selected_movie}",
+                                xaxis_title="Genre",
+                                yaxis_title="Rating",
+                                showlegend=True,
+                                barmode='group',
+                                legend=dict(title="Legend")
+                            )
+                
+                            st.plotly_chart(fig)
+                
+                        except Exception as e:
+                            st.error(f"Error creating chart: {e}")
+                    else:
+                        st.warning("No genres found with sufficient data to calculate average ratings.")
                 else:
                     st.error("No matching movie found with the given title and year.")
