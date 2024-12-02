@@ -272,7 +272,7 @@ elif option == "Hidden Gems":
     
     if not hidden_gems_sorted.empty:
         st.write(
-            "For example, here are some *Hidden Gems* (highly rated movies with less than 1000 votes):"
+            "For example, here are some *Hidden Gems* (highly rated movies(>7.0) with less than 1000 votes):"
         )
         st.dataframe(
             hidden_gems_sorted[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes']].rename(
