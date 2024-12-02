@@ -324,17 +324,28 @@ elif option == "Compare Movie Rating to Genre Average":
                     # 展示所选电影信息
                     st.write(f"Selected Movie: **{selected_movie} ({selected_year})**")
                     st.write(movie_details)
-                    
+                
                     # 获取所选电影的类型
-                    genres = movie_details.iloc[0][['genre_1', 'genre_2', 'genre_3']].dropna().tolist()
-
+                    genres = movie_details.iloc[0][['genre_1', 'genre_2', 'genre_3', 'genre_4', 'genre_5']].dropna().tolist()
+                
                     # 遍历类型，计算每种类型的均分并与该电影的评分对比
                     comparisons = []
                     for genre in genres:
-                        genre_movies = df[df['genre_1'] == genre].dropna(subset=['imdbRating'])  # 清理空值
-                        genre_avg_rating = genre_movies['imdbRating'].mean()
-                        movie_rating = movie_details['imdbRating'].iloc[0]
-                        comparisons.append((genre, movie_rating, genre_avg_rating))
+                        # 针对每种类型筛选数据
+                        genre_movies = df[
+                            (df['genre_1'] == genre) | 
+                            (df['genre_2'] == genre) | 
+                            (df['genre_3'] == genre) | 
+                            (df['genre_4'] == genre) | 
+                            (df['genre_5'] == genre)
+                        ].dropna(subset=['imdbRating'])  # 去除评分为空的行
+                
+                        if not genre_movies.empty:
+                            genre_avg_rating = genre_movies['imdbRating'].mean()
+                            movie_rating = movie_details['imdbRating'].iloc[0]
+                            comparisons.append((genre, movie_rating, genre_avg_rating))
+                        else:
+                            comparisons.append((genre, movie_details['imdbRating'].iloc[0], None))  # 类型无平均分
                 
                     # 转为 DataFrame 用于图表展示
                     comparison_df = pd.DataFrame(comparisons, columns=['Genre', 'Movie Rating', 'Genre Avg Rating'])
@@ -342,16 +353,16 @@ elif option == "Compare Movie Rating to Genre Average":
                     # 打印 DataFrame 供调试
                     st.write("Comparison DataFrame:", comparison_df)
                 
+                    # 绘制图表，处理缺失值
                     try:
-                        # 使用 Plotly 绘制条形图
                         fig = px.bar(
-                            comparison_df.melt(id_vars=['Genre'], value_vars=['Movie Rating', 'Genre Avg Rating']),
+                            comparison_df.melt(id_vars=['Genre'], value_vars=['Movie Rating', 'Genre Avg Rating'], var_name="Type", value_name="Rating"),
                             x='Genre',
-                            y='value',
-                            color='variable',
+                            y='Rating',
+                            color='Type',
                             barmode='group',
-                            labels={'value': 'Rating', 'variable': 'Comparison'},
-                            title="Movie Rating vs Genre Average Rating"
+                            labels={'Rating': 'IMDB Rating', 'Type': 'Comparison'},
+                            title=f"Movie Rating vs Genre Average Rating for {selected_movie}"
                         )
                         st.plotly_chart(fig)
                     except Exception as e:
