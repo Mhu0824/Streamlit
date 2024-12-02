@@ -375,14 +375,13 @@ elif option == "Compare Movie Rating to Genre Average":
                                 opacity=0.7  # 设置透明度
                             ))
                             
-                            # 绘制电影评分的红线
-                            fig.add_trace(go.Scatter(
-                                x=genre_avg_rating['genre'],  # 与每个类别对齐
-                                y=[movie_rating] * len(genre_avg_rating['genre']),  # 电影评分（红线）
-                                mode='lines',
-                                line=dict(color='red', width=2, dash='dash'),  # 红线设置
-                                name="Movie Rating (Red Line)",
-                            ))
+                            # 添加水平基准线
+                            fig.add_hline(
+                                y=movie_rating,  # 电影评分作为基准线
+                                line=dict(color='red', width=2, dash='dash'),  # 红色的虚线
+                                annotation_text="Movie Rating",  # 标注文字
+                                annotation_position="top right"  # 文字位置
+                            )
                             
                             # 更新布局，确保图表更加美观
                             fig.update_layout(
@@ -397,6 +396,7 @@ elif option == "Compare Movie Rating to Genre Average":
                             
                             # 显示图形
                             st.plotly_chart(fig)
+
                         except Exception as e:
                             st.error(f"Error creating chart: {e}")
                     else:
