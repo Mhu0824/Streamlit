@@ -354,31 +354,19 @@ elif option == "Compare Movie Rating to Genre Average":
                 
                         # 绘制图表
                         try:
-                            # 创建一个空的图形对象
-                            fig = go.Figure()
+                            # 准备数据
+                            # 创建一个图表，显示电影评分和每个类别的平均评分对比
+                            fig = px.bar(
+                                genre_avg_rating,
+                                x='genre',
+                                y='average_rating',
+                                title=f"Comparison of {selected_movie} Rating vs Average Rating by Genre",
+                                labels={'genre': 'Genre', 'average_rating': 'Average Rating'},
+                                color='genre',  # 按类别给柱子着色
+                                category_orders={'genre': genre_avg_rating['genre'].tolist()},
+                            )
                             
-                            # 绘制每个类别的平均评分的柱状图
-                            fig.add_trace(go.Bar(
-                                x=genre_avg_rating['genre'],
-                                y=genre_avg_rating['average_rating'],
-                                name="Average Rating",
-                                marker=dict(color='rgba(58, 71, 80, 0.7)'),  # 设置柱子颜色
-                                opacity=0.7  # 设置透明度
-                            ))
-                            
-                            # 绘制电影评分的柱状图
-                            # 使用重复的评分值与每个类别对应
-                            movie_ratings = [movie_rating] * len(genre_avg_rating['genre'])
-                            
-                            fig.add_trace(go.Bar(
-                                x=genre_avg_rating['genre'],
-                                y=movie_ratings,  # 电影评分的值
-                                name="Movie Rating",
-                                marker=dict(color='rgba(0, 114, 178, 0.7)'),  # 设置电影评分柱子的颜色
-                                opacity=0.7  # 设置透明度
-                            ))
-                            
-                            # 添加水平基准线
+                            # 在图表中添加电影评分的红线
                             fig.add_hline(
                                 y=movie_rating,  # 使用电影评分值作为基准线
                                 line=dict(color='red', width=2, dash='dash'),  # 红色虚线
@@ -386,19 +374,9 @@ elif option == "Compare Movie Rating to Genre Average":
                                 annotation_position="top right"  # 文字位置
                             )
                             
-                            # 更新布局
-                            fig.update_layout(
-                                title=f"Comparison of {selected_movie} Rating vs Average Rating by Genre",
-                                xaxis_title="Genre",
-                                yaxis_title="Rating",
-                                showlegend=True,
-                                barmode='group',  # 分组柱状图
-                                template="plotly_dark",  # 背景色
-                                xaxis_tickangle=-45,
-                            )
-                            
                             # 显示图形
                             st.plotly_chart(fig)
+
                         except Exception as e:
                             st.error(f"Error creating chart: {e}")
                     else:
