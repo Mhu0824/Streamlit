@@ -319,38 +319,41 @@ elif option == "Compare Movie Rating to Genre Average":
                     (df['title_clean'] == selected_movie.strip().lower()) &
                     (df['year_clean'] == selected_year)
                 ]
-
                 if not movie_details.empty:
+                    # 展示所选电影信息
                     st.write(f"Selected Movie: **{selected_movie} ({selected_year})**")
                     st.write(movie_details)
-
+                    
                     # 获取所选电影的类型
                     genres = movie_details.iloc[0][['genre_1', 'genre_2', 'genre_3']].dropna().tolist()
 
                     # 遍历类型，计算每种类型的均分并与该电影的评分对比
                     comparisons = []
                     for genre in genres:
-                        genre_movies = df[df['genre_1'] == genre]
+                        genre_movies = df[df['genre_1'] == genre].dropna(subset=['imdbRating'])  # 清理空值
                         genre_avg_rating = genre_movies['imdbRating'].mean()
                         movie_rating = movie_details['imdbRating'].iloc[0]
                         comparisons.append((genre, movie_rating, genre_avg_rating))
-
+                
                     # 转为 DataFrame 用于图表展示
                     comparison_df = pd.DataFrame(comparisons, columns=['Genre', 'Movie Rating', 'Genre Avg Rating'])
-
-                    # 使用 Plotly 绘制条形图
-                    fig = px.bar(
-                        comparison_df.melt(id_vars=['Genre'], value_vars=['Movie Rating', 'Genre Avg Rating']),
-                        x='Genre',
-                        y='value',
-                        color='variable',
-                        barmode='group',
-                        labels={'value': 'Rating', 'variable': 'Comparison'},
-                        title="Movie Rating vs Genre Average Rating"
-                    )
-                    st.plotly_chart(fig)
-
+                
+                    # 打印 DataFrame 供调试
+                    st.write("Comparison DataFrame:", comparison_df)
+                
+                    try:
+                        # 使用 Plotly 绘制条形图
+                        fig = px.bar(
+                            comparison_df.melt(id_vars=['Genre'], value_vars=['Movie Rating', 'Genre Avg Rating']),
+                            x='Genre',
+                            y='value',
+                            color='variable',
+                            barmode='group',
+                            labels={'value': 'Rating', 'variable': 'Comparison'},
+                            title="Movie Rating vs Genre Average Rating"
+                        )
+                        st.plotly_chart(fig)
+                    except Exception as e:
+                        st.error(f"Error creating chart: {e}")
                 else:
                     st.error("No matching movie found with the given title and year.")
-        else:
-            st.error("No matching movies found. Try a different search term.")
