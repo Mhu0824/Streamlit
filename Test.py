@@ -32,14 +32,29 @@ st.title("🎬 Movie Data Dashboard")
 # 功能选择
 option = st.sidebar.radio(
     "Choose a feature:",
-    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie", "Hidden Gems","Compare Movie Rating to Genre Average")
+    ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie", "Unearth Hidden Movies: Rate & Vote","Compare Movie Rating to Genre Average")
 )
 
 # 功能 1: 数据概览
+# Functionality 1: Overview
 if option == "Overview":
     st.header("Overview")
-    st.write("Dataset Snapshot:")
-    st.dataframe(df.head())
+    st.write("""
+        Welcome to the Movie Data Explorer! This dashboard allows you to explore various aspects of a large movie dataset, 
+        including insights into movie genres, ratings, countries, directors, and more. Below is an overview of the key features you can explore:
+        
+        - **Genre Distribution**: Explore the distribution of movie genres across the dataset, highlighting the most common genres.
+        
+        - **Top Genres by Country**: Discover the top genres of movies based on country, helping to identify regional preferences.
+        
+        - **Search by Director**: Look up movies by specific directors, view their movie details, and explore their average ratings.
+        
+        - **Search by Movie**: Find movies by title, get details about the selected movie, and explore other works by the same director.
+        
+        - **Unearth Hidden Movies: Rate & Vote**: Vote and rate to uncover movies that might have been overlooked, offering great viewing recommendations.
+        
+        - **Compare Movie Rating to Genre Average**: Compare the IMDb rating of a movie to the average rating for its genre.
+    """)
 
 # 功能 2: 电影类型分布
 elif option == "Genre Distribution":
@@ -214,8 +229,8 @@ elif option == "Search by Movie":
             st.write("No matching movies found.")
             
 # 功能 6: 冷门佳作
-elif option == "Hidden Gems":
-    st.header("Hidden Gems: High Ratings but Low Votes")
+elif option == "Unearth Hidden Movies: Rate & Vote":
+    st.header("Unearth Hidden Movies: Rate & Vote")
     
     # 选择类别
     st.subheader("Step 1: Select Genre (Optional)")
@@ -264,7 +279,7 @@ elif option == "Hidden Gems":
     )
     
     # 冷门佳作展示
-    st.subheader("What This Can Do: Highlighting Hidden Gems")
+    st.subheader("What This Can Do: Discover Your Hidden Gems")
     hidden_gems = df[
         ((df['genre_1'] == genre) | (genre == "All")) &  # 同样支持分类或全类别
         (df['imdbVotes'] < 1000) & 
