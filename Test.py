@@ -212,27 +212,35 @@ elif option == "Search by Movie":
             st.write("No matching movies found.")
             
 # 功能 6: 冷门佳作
-# 功能 6: 冷门佳作
 elif option == "Hidden Gems":
     st.header("Hidden Gems: High Ratings but Low Votes")
     
+    # 选择类别
+    st.subheader("Step 1: Select Genre (Optional)")
+    genre = st.selectbox(
+        "Select a Genre (Leave empty for all genres):", 
+        options=["All"] + sorted(df['genre_1'].dropna().unique()),  # 包括 "All" 选项
+        index=0  # 默认选中 "All"
+    )
+    
     # 自由操作滑动条
-    st.subheader("Customize Your Range:")
+    st.subheader("Step 2: Customize Your Range")
     vote_filter = st.slider(
         "Select IMDB Votes Range", 
-        min_value=0, max_value=2000, 
-        value=(0, 1000),  # 初始值，关注投票少于 1000 的电影
-        step=10  # 票数的步长
+        min_value=0, max_value=2000000, 
+        value=(0, 1000),  # 初始值
+        step=10  # 票数步长
     )
     rating_filter = st.slider(
         "Select IMDB Rating Range", 
         min_value=0.0, max_value=10.0, 
-        value=(7.0, 10.0),  # 初始值，关注评分高于 7 的电影
-        step=0.1  # 评分的步长
+        value=(7.0, 10.0),  # 初始值
+        step=0.1  # 评分步长
     )
     
     # 数据筛选与展示
     filtered_movies = df[
+        ((df['genre_1'] == genre) | (genre == "All")) &  # 如果选择了特定类别，则筛选该类别；否则选择所有类别
         (df['imdbVotes'] >= vote_filter[0]) & 
         (df['imdbVotes'] <= vote_filter[1]) & 
         (df['imdbRating'] >= rating_filter[0]) & 
@@ -242,7 +250,7 @@ elif option == "Hidden Gems":
 
     # 显示筛选结果
     st.write(
-        f"Movies with IMDB Votes between {vote_filter[0]} and {vote_filter[1]}, "
+        f"Movies in {genre if genre != 'All' else 'all genres'} with IMDB Votes between {vote_filter[0]} and {vote_filter[1]}, "
         f"and IMDB Rating between {rating_filter[0]} and {rating_filter[1]}:"
     )
     st.dataframe(
@@ -256,7 +264,11 @@ elif option == "Hidden Gems":
     
     # 冷门佳作展示
     st.subheader("What This Can Do: Highlighting Hidden Gems")
-    hidden_gems = df[(df['imdbVotes'] < 1000) & (df['imdbRating'] > 7.0)]
+    hidden_gems = df[
+        ((df['genre_1'] == genre) | (genre == "All")) &  # 同样支持分类或全类别
+        (df['imdbVotes'] < 1000) & 
+        (df['imdbRating'] > 7.0)
+    ]
     hidden_gems_sorted = hidden_gems.sort_values(by='imdbRating', ascending=False)
     
     if not hidden_gems_sorted.empty:
@@ -272,4 +284,5 @@ elif option == "Hidden Gems":
             )
         )
     else:
-        st.write("No hidden gems found in the dataset.")
+        st.write(f"No hidden gems found in {genre if genre != 'All' else 'all genres'}.")
+        
