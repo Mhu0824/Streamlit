@@ -381,14 +381,25 @@ elif option == "Compare Movie Rating to Genre Average":
                                 opacity=0.7  # 设置透明度
                             ))
 
-                            # 添加基准红线，横跨所有柱子
-                            fig.add_trace(go.Scatter(
-                                x=comparison_df['Genre'],  # 与每个类别对齐
-                                y=[movie_rating] * len(comparison_df['Genre']),  # 使用电影评分创建基准线
-                                mode='lines',
-                                line=dict(color='red', width=2, dash='dash'),  # 红线设置
-                                name="Movie Rating (Red Line)",
-                            ))
+                            # 检查是否有多个类别并添加红线
+                            if len(comparison_df['Genre']) > 1:
+                                # 添加基准红线，横跨所有柱子
+                                fig.add_trace(go.Scatter(
+                                    x=comparison_df['Genre'],  # 与每个类别对齐
+                                    y=[movie_rating] * len(comparison_df['Genre']),  # 使用电影评分创建基准线
+                                    mode='lines',
+                                    line=dict(color='red', width=2, dash='dash'),  # 红线设置
+                                    name="Movie Rating (Red Line)",
+                                ))
+                            else:
+                                # 单一类型的电影，显示一条横线
+                                fig.add_trace(go.Scatter(
+                                    x=[comparison_df['Genre'].iloc[0]], 
+                                    y=[movie_rating], 
+                                    mode='markers',
+                                    marker=dict(color='red', size=10),
+                                    name="Movie Rating (Red Marker)"
+                                ))
 
                             # 更新布局，确保图表更加美观
                             fig.update_layout(
