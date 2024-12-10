@@ -5,7 +5,7 @@ import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
 
-# 加载数据
+# Load data
 @st.cache
 def load_data():
     url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/d6d8457d63867b435bfdea9c541afd71495829f9/movies_dataset.csv"
@@ -13,19 +13,19 @@ def load_data():
 
 df = load_data()
 
-# 数据预处理
+# Data preprocessing
 df['year'] = df['year'].astype(str).str.replace(r'\D', '', regex=True)
 
-# 标题
+# Title
 st.title("🎬 Movie Data Dashboard")
 
-# 功能选择
+# Feature selection
 option = st.sidebar.radio(
     "Choose a feature:",
     ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie", "Unearth Hidden Movies: Rate & Vote", "Compare Movie Rating to Genre Average")
 )
 
-# 功能 1: 数据概览
+# Feature 1: Overview
 if option == "Overview":
     st.header("Overview")
     st.write("""
@@ -33,14 +33,14 @@ if option == "Overview":
         including insights into movie genres, ratings, countries, directors, and more.
     """)
 
-# 公用函数: 生成条形图
+# Common function: generate bar chart
 def plot_bar_chart(data, x, y, title):
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.barplot(x=x, y=y, data=data, ax=ax)
     ax.set_title(title)
     st.pyplot(fig)
 
-# 功能 2: 电影类型分布
+# Feature 2: Genre Distribution
 elif option == "Genre Distribution":
     st.header("Genre Distribution")
     genres = pd.concat([
@@ -62,7 +62,7 @@ elif option == "Genre Distribution":
     st.header("Top 15 Genres and 'Other'")
     plot_bar_chart(top_15_genres_with_other, top_15_genres_with_other.values, top_15_genres_with_other.index, "Top 15 Genres and 'Other'")
 
-# 功能 3: 不同国家电影类型
+# Feature 3: Top Genres by Country
 elif option == "Top Genres by Country":
     df['country'] = df['country'].str.split(", ")
     df_exploded = df.explode('country')
@@ -83,7 +83,7 @@ elif option == "Top Genres by Country":
 
         plot_bar_chart(top_genres_display, 'Count', 'Genre', f"Top Genres in {selected_country}")
 
-# 功能 4: 按导演名字搜索
+# Feature 4: Search by Director
 elif option == "Search by Director":
     st.header("Search by Director")
     director_name = st.text_input("Enter Director's Name:")
@@ -104,7 +104,7 @@ elif option == "Search by Director":
             avg_rating = director_movies['imdbRating'].mean()
             st.write(f"Average IMDB Rating for {selected_director}'s movies: {avg_rating:.2f}")
 
-# 功能 5: 按电影名字搜索
+# Feature 5: Search by Movie
 elif option == "Search by Movie":
     st.header("Search by Movie")
     movie_name = st.text_input("Enter Movie Title:")
