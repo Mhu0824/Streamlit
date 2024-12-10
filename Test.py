@@ -160,7 +160,7 @@ elif option == "Search by Director":
             avg_rating = director_movies['imdbRating'].mean()
             st.write(f"Average IMDB Rating for {selected_director}'s movies: {avg_rating:.2f}")
 
-# 功能 2: 按电影名字搜索
+# 功能 5: 按电影名字搜索
 elif option == "Search by Movie":
     st.header("Search by Movie")
 
@@ -301,7 +301,7 @@ elif option == "Unearth Hidden Movies: Rate & Vote":
     else:
         st.write(f"No hidden gems found in {genre if genre != 'All' else 'all genres'}.")
 
-# 新功能: 电影评分与类别均分比较
+# 功能7: 电影评分与类别均分比较
 elif option == "Compare Movie Rating to Genre Average":
     st.header("Compare Movie Rating to Genre Average")
 
