@@ -14,7 +14,7 @@ def load_data():
 df = load_data()
 
 df['year'] = df['year'].astype(str).str.replace(r'\D', '', regex=True)
-df_cleaned = df.drop_duplicates()
+df = df.drop_duplicates(subset=['title', 'year'])
 
 # title
 st.title("🎬 Movie Data Dashboard")
