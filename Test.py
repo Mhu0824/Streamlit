@@ -5,10 +5,10 @@ import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
 
-#load data"https://raw.githubusercontent.com/Mhu0824/Streamlit/d6d8457d63867b435bfdea9c541afd71495829f9/movies_dataset.csv"
+#load data
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/COMM599-Fall2024/fall_2024/ad7b8f86b99e1f2aac800d58c1feecdee61ac906/mhu16035/FINAL/movies_dataset.csv"
+    url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/d6d8457d63867b435bfdea9c541afd71495829f9/movies_dataset.csv"
     return pd.read_csv(url, encoding='ISO-8859-1')
 
 df = load_data()
