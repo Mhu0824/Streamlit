@@ -15,7 +15,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 #load data
-@st.cache
+@st.cache_data
 def load_data():
     url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/d6d8457d63867b435bfdea9c541afd71495829f9/movies_dataset.csv"
     return pd.read_csv(url, encoding='ISO-8859-1')
