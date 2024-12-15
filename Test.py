@@ -336,7 +336,15 @@ elif option == "Compare Movie Rating to Genre Average":
 
                 if not movie_details.empty:
                     st.write(f"Selected Movie: **{selected_movie} ({selected_year})**")
-                    st.write(movie_details)
+                    st.dataframe(
+                        movie_details[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
+                            columns={
+                                'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
+                                'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes', 
+                                'rating': 'Rating', 'awards': 'Awards'
+                            }
+                        )
+                    )
 
                     # Get the IMDB rating of the selected movie
                     movie_rating = movie_details['imdbRating'].iloc[0]
