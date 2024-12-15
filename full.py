@@ -30,9 +30,21 @@ if option == "Overview":
     st.header("Overview")
     st.write("""
         Welcome to the Movie Data Explorer! This dashboard allows you to explore various aspects of a large movie dataset, 
-        including insights into movie genres, ratings, countries, directors, and more.
+        including insights into movie genres, ratings, countries, directors, and more. Below is an overview of the key features you can explore:
+        
+        - **Genre Distribution**: Explore the distribution of movie genres across the dataset, highlighting the most common genres.
+        
+        - **Top Genres by Country**: Discover the top genres of movies based on country, helping to identify regional preferences.
+        
+        - **Search by Director**: Look up movies by specific directors, view their movie details, and explore their average ratings.
+        
+        - **Search by Movie**: Find movies by title, get details about the selected movie, and explore other works by the same director.
+        
+        - **Unearth Hidden Movies: Rate & Vote**: Filters movies based on user-defined IMDb ratings and vote ranges to help discover hidden gems(highly rated movies with fewer votes, which might have been overlooked by a wider audience).
+        
+        - **Compare Movie Rating to Genre Average**: Compares a movie’s rating to its genre's average rating. It shows how the movie fares against similar films, helping users identify underrated or overrated movies within the same genre.
     """)
-
+    
 # Common function: generate bar chart
 def plot_bar_chart(data, x, y, title):
     fig, ax = plt.subplots(figsize=(8, 6))
