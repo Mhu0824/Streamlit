@@ -14,10 +14,9 @@ import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
 
-# 加载数据
+#load data
 @st.cache
 def load_data():
-    # 使用GitHub上的CSV文件链接或本地文件路径
     url = "https://raw.githubusercontent.com/Mhu0824/Streamlit/d6d8457d63867b435bfdea9c541afd71495829f9/movies_dataset.csv"
     return pd.read_csv(url, encoding='ISO-8859-1')
 
@@ -25,17 +24,16 @@ df = load_data()
 
 df['year'] = df['year'].astype(str).str.replace(r'\D', '', regex=True)
 
-# 标题
+# title
 st.title("🎬 Movie Data Dashboard")
 
-# 功能选择
+# Choose a function
 option = st.sidebar.radio(
     "Choose a feature:",
     ("Overview", "Genre Distribution", "Top Genres by Country", "Search by Director", "Search by Movie", "Unearth Hidden Movies: Rate & Vote","Compare Movie Rating to Genre Average")
 )
 
-# 功能 1: 数据概览
-# Functionality 1: Overview
+# Feature 1: Overview
 if option == "Overview":
     st.header("Overview")
     st.write("""
@@ -55,11 +53,11 @@ if option == "Overview":
         - **Compare Movie Rating to Genre Average**: Compares a movie’s rating to its genre's average rating. It shows how the movie fares against similar films, helping users identify underrated or overrated movies within the same genre.
     """)
 
-# 功能 2: 电影类型分布
+# Feature 2: Genre Distribution
 elif option == "Genre Distribution":
     st.header("Genre Distribution")
 
-    # 处理电影类型数据
+    # Process movie genre data
     genres = pd.concat([
         df['genre_1'].str.strip(), 
         df['genre_2'].str.strip(), 
@@ -68,71 +66,71 @@ elif option == "Genre Distribution":
         df['genre_5'].str.strip()
     ]).dropna()
 
-    # 计算所有类型的分布
+    # Calculate the distribution of all genres
     genre_counts = genres.value_counts()
 
-    # 在 Streamlit 中显示所有类型及其数量
+    # Display all genres and their counts
     st.write("All Genres and Their Counts:")
     st.write(genre_counts)
 
-    # 获取前 15 个类型及其数量
+    # Get the top 15 genres and thier counts
     top_15_genres = genre_counts.head(15)
 
-    # 将其余类型合并为 "Other"
+    # Combine remaining genres as "Other"
     other_count = genre_counts[15:].sum()
 
-    # 创建一个新的序列，将 "Other" 直接添加到前 15 个类型中
+    # Create a new series adding "Other" to the top 15 genres
     top_15_genres_with_other = pd.concat(
         [top_15_genres, pd.Series({"Other": other_count})]
     )
 
-    # 显示柱状图
+    # Display a bar chart
     st.header("Top 15 Genres and 'Other'")
     fig, ax = plt.subplots(figsize=(8, 6))
     sns.barplot(x=top_15_genres_with_other.values, y=top_15_genres_with_other.index, ax=ax)
     ax.set_title("Top 15 Genres and 'Other'")
     st.pyplot(fig)
 
-# 功能 3: 不同国家电影类型
+# Feature 3: Movie genres by country
 elif option == "Top Genres by Country":
-    # 拆分 country 列
+    # Split the country column
     df['country'] = df['country'].str.split(", ")
-    df_exploded = df.explode('country')  # 展开成多行，每行一个国家
+    df_exploded = df.explode('country')  # Expand to multiple rows, one per country
 
-    # 只使用 genre_1 的内容
+    # Use only genre_1 content
     df_exploded = df_exploded[['country', 'genre_1']].dropna()
-    df_exploded['genre_1'] = df_exploded['genre_1'].str.strip()  # 去掉空格
+    df_exploded['genre_1'] = df_exploded['genre_1'].str.strip()  # Remove whitespace
 
-    # 按国家和 genre_1 统计
+    # Count by country and genre_1
     country_genre_counts = df_exploded.groupby(['country', 'genre_1']).size().reset_index(name='count')
 
-    # 用户选择国家
+    # User selects a country
     countries = country_genre_counts['country'].unique()
     selected_country = st.selectbox("Select a Country:", sorted(countries))
 
-    # 获取所选国家的 Top 10 类型
+    # Get the top 10 genres for the selected country
     if selected_country:
         top_genres = country_genre_counts[country_genre_counts['country'] == selected_country]
         top_genres = top_genres.nlargest(10, 'count')
 
-        # 重命名列为“Count”和“Genre”
+        # Rename columns
         top_genres_display = top_genres[['genre_1', 'count']].rename(columns={'genre_1': 'Genre', 'count': 'Count'}).reset_index(drop=True)
 
-        # 显示Top 10类型及其数量
+        # Display the top 10 genres and their counts
         st.write(f"Top 10 Genres for {selected_country}:")
         st.write(top_genres_display)
 
-        # 绘制条形图
+        # Plot a bar chart
         fig, ax = plt.subplots(figsize=(8, 6))
         sns.barplot(x='Count', y='Genre', data=top_genres_display, ax=ax)
         ax.set_title(f"Top Genres in {selected_country}")
         st.pyplot(fig)
 
-# 功能 4: 按导演名字搜索
+# Feature 4: Search by director name
 elif option == "Search by Director":
     st.header("Search by Director")
 
-    # 用户输入导演名字，自动联想匹配结果
+    # User inputs a director's name with auto-matching suggestions
     director_name = st.text_input("Enter Director's Name:")
     if director_name:
         matching_directors = sorted(
@@ -141,10 +139,10 @@ elif option == "Search by Director":
         selected_director = st.selectbox("Select a Director:", matching_directors)
         
         if selected_director:
-            # 筛选导演的电影
+            # Filter movies by the director
             director_movies = df[df['director'].str.contains(selected_director, na=False)]
             
-            # 显示导演电影及所需信息
+            # Display movies by the director and relevant information
             st.write(f"Movies directed by {selected_director}:")
             st.dataframe(
                 director_movies[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
@@ -156,45 +154,45 @@ elif option == "Search by Director":
                 )
             )
 
-            # 计算导演电影平均评分
+            # Calculate the average rating for the director's movies
             avg_rating = director_movies['imdbRating'].mean()
             st.write(f"Average IMDB Rating for {selected_director}'s movies: {avg_rating:.2f}")
 
-# 功能 5: 按电影名字搜索
+# Feature 5: Search by Movie
 elif option == "Search by Movie":
     st.header("Search by Movie")
 
-    # 用户输入电影名字，自动联想匹配结果（显示年份）
+    # User enters the movie title, with suggestions showing results (including year)
     movie_name = st.text_input("Enter Movie Title:")
 
     if movie_name:
-        # 清理数据集中的 title 和 year 列，去除空格并确保年份是整数
-        df['title_clean'] = df['title'].str.strip().str.lower()  # 清理 title 列
-        df['year_clean'] = df['year'].astype(str).str.strip()  # 确保年份是字符串并去除空格
-        
-        # 获取所有与电影名称匹配的电影，并显示附带年份的电影名称
+        # Clean the title and year columns in the dataset
+        df['title_clean'] = df['title'].str.strip().str.lower() 
+        df['year_clean'] = df['year'].astype(str).str.strip()  # Ensure year is a string and strip spaces
+
+        # Get all movies matching the entered name, displaying movie names with their release years
         matching_movies = sorted(
             {f"{title.strip()} ({year})" for title, year in zip(df['title_clean'], df['year_clean']) 
              if pd.notna(title) and movie_name.lower() in title.lower()}
         )
         
-        # 显示所有匹配的电影名称（附带年份）
+        # Display all matching movie names (with years)
         if matching_movies:
             selected_movie_with_year = st.selectbox("Select a Movie:", matching_movies)
             
             if selected_movie_with_year:
-                # 从选项中解析出电影名称和年份
+                # Parse the movie title and year from the selection
                 selected_movie, selected_year = selected_movie_with_year.rsplit(" (", 1)
                 selected_year = selected_year.rstrip(")")
                 
-                # 根据 title_clean 和 year_clean 筛选唯一电影
+                # Filter the dataset for the unique movie using title_clean and year_clean
                 movie_details = df[(df['title_clean'] == selected_movie.lower()) & (df['year_clean'] == selected_year)]
                 
                 if not movie_details.empty:
-                    # 获取导演名字
+                    # Get the director's name
                     director_name = movie_details['director'].iloc[0]
                     
-                    # 显示详细信息
+                    # Display detailed information
                     st.write(f"Details for '{selected_movie} ({selected_year})' created by {director_name}:")
                     st.dataframe(
                         movie_details[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
@@ -206,7 +204,7 @@ elif option == "Search by Movie":
                         )
                     )
                     
-                    # 显示导演其他作品
+                    # Display other movies by the same director
                     other_movies = df[df['director'] == director_name]
                     st.write(f"Other movies by {director_name}:")
                     st.dataframe(
@@ -219,7 +217,7 @@ elif option == "Search by Movie":
                         )
                     )
                     
-                    # 计算导演其他电影的平均评分
+                    # Calculate the average rating of other movies by the director
                     avg_rating = other_movies['imdbRating'].mean()
                     st.write(f"Average IMDB Rating for {director_name}'s movies: {avg_rating:.2f}")
                 else:
@@ -227,35 +225,35 @@ elif option == "Search by Movie":
         else:
             st.write("No matching movies found.")
             
-# 功能 6: 冷门佳作
+# Feature 6: Unearth Hidden Movies
 elif option == "Unearth Hidden Movies: Rate & Vote":
     st.header("Unearth Hidden Movies: Rate & Vote")
     
-    # 选择类别
+    # Select a genre
     st.subheader("Step 1: Select Genre (Optional)")
     genre = st.selectbox(
         "Select a Genre (Leave empty for all genres):", 
-        options=["All"] + sorted(df['genre_1'].dropna().unique()),  # 包括 "All" 选项
-        index=0  # 默认选中 "All"
+        options=["All"] + sorted(df['genre_1'].dropna().unique()),  # Includes the "All" option
+        index=0  # Defaults to "All"
     )
     
-    # 自由选择投票数范围
+    # Allow users to define a range for votes
     st.subheader("Step 2: Select IMDB Votes Range")
     min_votes = st.number_input("Minimum Votes", min_value=0, max_value=2000000, value=0, step=100)
     max_votes = st.number_input("Maximum Votes", min_value=0, max_value=2000000, value=1000, step=100)
     
-    # 自由选择评分范围
+    # Allow users to set a range for ratings
     st.subheader("Step 3: Customize Your Rating Range")
     rating_filter = st.slider(
         "Select IMDB Rating Range", 
         min_value=0.0, max_value=10.0, 
-        value=(7.0, 10.0),  # 初始值
-        step=0.1  # 评分步长
+        value=(7.0, 10.0),  # Default range
+        step=0.1  # Step size for ratings
     )
     
-    # 数据筛选与展示
+    # Filter and display the data
     filtered_movies = df[
-        ((df['genre_1'] == genre) | (genre == "All")) &  # 如果选择了特定类别，则筛选该类别；否则选择所有类别
+        ((df['genre_1'] == genre) | (genre == "All")) &  # Filter by genre if specified, otherwise show all genres
         (df['imdbVotes'] >= min_votes) & 
         (df['imdbVotes'] <= max_votes) & 
         (df['imdbRating'] >= rating_filter[0]) & 
@@ -263,7 +261,7 @@ elif option == "Unearth Hidden Movies: Rate & Vote":
     ]
     filtered_movies_sorted = filtered_movies.sort_values(by='imdbRating', ascending=False)
 
-    # 显示筛选结果
+    # Display the filtered results
     st.write(
         f"Movies in {genre if genre != 'All' else 'all genres'} with IMDB Votes between {min_votes} and {max_votes}, "
         f"and IMDB Rating between {rating_filter[0]} and {rating_filter[1]}:"
@@ -277,10 +275,10 @@ elif option == "Unearth Hidden Movies: Rate & Vote":
         )
     )
     
-    # 冷门佳作展示
+    # Show hidden gems
     st.subheader("What This Can Do: Discover Your Hidden Gems")
     hidden_gems = df[
-        ((df['genre_1'] == genre) | (genre == "All")) &  # 同样支持分类或全类别
+        ((df['genre_1'] == genre) | (genre == "All")) &  # Also supports filtering by genre or all genres
         (df['imdbVotes'] < 1000) & 
         (df['imdbRating'] > 7.0)
     ]
@@ -301,122 +299,90 @@ elif option == "Unearth Hidden Movies: Rate & Vote":
     else:
         st.write(f"No hidden gems found in {genre if genre != 'All' else 'all genres'}.")
 
-# 功能7: 电影评分与类别均分比较
-elif option == "Compare Movie Rating to Genre Average":
-    st.header("Compare Movie Rating to Genre Average")
+# Feature 7: Compare Movie Rating to Dataset Average
+elif option == "Compare Movie Rating to Dataset Average":
+    st.header("Compare Movie Rating to Dataset Average")
 
-    # 用户输入电影名字
+    # User inputs movie title
     movie_name = st.text_input("Enter Movie Title:")
 
     if movie_name:
-        # 确保列已存在并进行数据清理
+        # Ensure necessary columns are cleaned and available
         if 'title_clean' not in df.columns:
-            df['title_clean'] = df['title'].str.strip().str.lower()  # 清理 title 列
+            df['title_clean'] = df['title'].str.strip().str.lower()  # Clean 'title' column
         if 'year_clean' not in df.columns:
-            df['year_clean'] = df['year'].astype(str).str.strip()  # 确保年份是字符串并去除空格
+            df['year_clean'] = df['year'].astype(str).str.strip()  # Clean 'year' column and ensure it's a string
 
-        # 获取匹配的电影，并显示附带年份的电影名称
+        # Find matching movies based on the entered title
         matching_movies = sorted(
             {f"{title} ({year})" for title, year in zip(df['title'], df['year']) 
              if pd.notna(title) and movie_name.lower() in title.lower()}
         )
 
         if matching_movies:
-            # 用户选择电影
+            # Allow user to select a movie from the matching options
             selected_movie_with_year = st.selectbox("Select a Movie:", matching_movies)
 
             if selected_movie_with_year:
-                # 从选项中解析电影名称和年份
+                # Extract the selected movie's title and year
                 selected_movie, selected_year = selected_movie_with_year.rsplit(" (", 1)
                 selected_year = selected_year.rstrip(")")
 
-                # 根据标题和年份筛选电影
+                # Filter the dataset to find the selected movie
                 movie_details = df[
                     (df['title_clean'] == selected_movie.strip().lower()) &
                     (df['year_clean'] == selected_year)
                 ]
+
                 if not movie_details.empty:
                     st.write(f"Selected Movie: **{selected_movie} ({selected_year})**")
                     st.write(movie_details)
-                
-                    # 获取所选电影的类型
-                    genres = movie_details.iloc[0][['genre_1', 'genre_2', 'genre_3', 'genre_4', 'genre_5']].dropna().tolist()
-                
-                    # 计算每种类型的平均分
-                    comparisons = []
-                    for genre in genres:
-                        genre_movies = df[
-                            (df['genre_1'] == genre) | 
-                            (df['genre_2'] == genre) | 
-                            (df['genre_3'] == genre) | 
-                            (df['genre_4'] == genre) | 
-                            (df['genre_5'] == genre)
-                        ].dropna(subset=['imdbRating'])
-                
-                        if not genre_movies.empty:
-                            genre_avg_rating = genre_movies['imdbRating'].mean()
-                            comparisons.append({
-                                'Genre': genre,
-                                'Genre Avg Rating': genre_avg_rating
-                            })
-                
-                    comparison_df = pd.DataFrame(comparisons)
-                
-                    if not comparison_df.empty:
-                        # 获取电影的评分
-                        movie_rating = movie_details['imdbRating'].iloc[0]
-                
-                        # 绘制图表
-                        try:
-                            # 准备数据
-                            fig = go.Figure()
 
-                            # 绘制每个类别的平均评分的柱状图
-                            fig.add_trace(go.Bar(
-                                x=comparison_df['Genre'],
-                                y=comparison_df['Genre Avg Rating'],
-                                name="Average Rating",
-                                marker=dict(color='rgba(58, 71, 80, 0.7)'),  # 设置柱子颜色
-                                opacity=0.7  # 设置透明度
-                            ))
+                    # Get the IMDB rating of the selected movie
+                    movie_rating = movie_details['imdbRating'].iloc[0]
 
-                            # 检查是否有多个类别并添加红线
-                            if len(comparison_df['Genre']) > 1:
-                                # 添加基准红线，横跨所有柱子
-                                fig.add_trace(go.Scatter(
-                                    x=comparison_df['Genre'],  # 与每个类别对齐
-                                    y=[movie_rating] * len(comparison_df['Genre']),  # 使用电影评分创建基准线
-                                    mode='lines',
-                                    line=dict(color='red', width=2, dash='dash'),  # 红线设置
-                                    name="Movie Rating (Red Line)",
-                                ))
-                            else:
-                                # 单一类型的电影，显示一条横线
-                                fig.add_trace(go.Scatter(
-                                    x=[comparison_df['Genre'].iloc[0]], 
-                                    y=[movie_rating], 
-                                    mode='markers',
-                                    marker=dict(color='red', size=10),
-                                    name="Movie Rating (Red Marker)"
-                                ))
+                    # Calculate the average IMDB rating for the entire dataset
+                    dataset_avg_rating = df['imdbRating'].mean()
 
-                            # 更新布局，确保图表更加美观
-                            fig.update_layout(
-                                title=f"Comparison of {selected_movie} Rating vs Average Rating by Genre",
-                                xaxis_title="Genre",
-                                yaxis_title="Rating",
-                                showlegend=True,
-                                barmode='group',  # 分组柱状图
-                                template="plotly_dark",  # 背景色
-                                xaxis_tickangle=-45,
-                            )
+                    # Visualize the comparison
+                    try:
+                        # Prepare data for the bar chart
+                        fig = go.Figure()
 
-                            # 显示图形
-                            st.plotly_chart(fig)
+                        # Add a bar for the dataset average rating
+                        fig.add_trace(go.Bar(
+                            x=["Dataset Average"],
+                            y=[dataset_avg_rating],
+                            name="Dataset Average Rating",
+                            marker=dict(color='rgba(58, 71, 80, 0.7)'),  # Set bar color
+                            opacity=0.7  # Set transparency
+                        ))
 
-                        except Exception as e:
-                            st.error(f"Error creating chart: {e}")
-                    else:
-                        st.warning("No genres found with sufficient data to calculate average ratings.")
+                        # Add a bar for the selected movie's rating
+                        fig.add_trace(go.Bar(
+                            x=["Selected Movie"],
+                            y=[movie_rating],
+                            name="Selected Movie Rating",
+                            marker=dict(color='rgba(255, 99, 71, 0.7)'),  # Set bar color
+                            opacity=0.7  # Set transparency
+                        ))
+
+                        # Update chart layout for better readability
+                        fig.update_layout(
+                            title=f"Rating Comparison for '{selected_movie} ({selected_year})'",
+                            xaxis_title="Category",
+                            yaxis_title="Rating",
+                            showlegend=True,
+                            barmode='group',  # Grouped bar chart
+                            template="plotly_dark",  # Set background theme
+                        )
+
+                        # Display the chart
+                        st.plotly_chart(fig)
+
+                    except Exception as e:
+                        st.error(f"Error creating chart: {e}")
                 else:
                     st.error("No matching movie found with the given title and year.")
+        else:
+            st.warning("No matching movies found for the entered title.")
