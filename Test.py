@@ -339,9 +339,9 @@ elif option == "Compare Movie Rating to Genre Average":
                     st.dataframe(
                         movie_details[['title', 'genre_1', 'year', 'imdbRating', 'imdbVotes', 'rating', 'awards']].rename(
                             columns={
-                                'title': 'Title', 'genre_1': 'Genre', 'director': 'Director', 'year': 'Year', 
+                                'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
                                 'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes', 
-                                'rating': 'Rating', 'awards': 'Awards'
+                                'rating': 'Rating', 'awards': 'Awards', 'director': 'Director'
                             }
                         )
                     )
