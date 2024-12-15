@@ -300,9 +300,8 @@ elif option == "Unearth Hidden Movies: Rate & Vote":
         st.write(f"No hidden gems found in {genre if genre != 'All' else 'all genres'}.")
 
 # Feature 7: Compare Movie Rating to Dataset Average
-# Feature 7: Compare Movie Rating to Dataset Average
-elif option == "Compare Movie Rating to Dataset Average":
-    st.header("Compare Movie Rating to Dataset Average")
+elif option == "Compare Movie Rating to Genre Average":
+    st.header("Compare Movie Rating to Genre Average")
 
     # User inputs movie title
     movie_name = st.text_input("Enter Movie Title:")
