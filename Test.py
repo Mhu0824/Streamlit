@@ -341,7 +341,7 @@ elif option == "Compare Movie Rating to Genre Average":
                             columns={
                                 'title': 'Title', 'genre_1': 'Genre', 'year': 'Year', 
                                 'imdbRating': 'IMDB Rating', 'imdbVotes': 'IMDB Votes', 
-                                'rating': 'Rating', 'awards': 'Awards', 'director': 'Director'
+                                'rating': 'Rating', 'awards': 'Awards'
                             }
                         )
                     )
